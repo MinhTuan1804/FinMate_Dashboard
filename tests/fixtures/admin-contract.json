@@ -1,0 +1,257 @@
+[
+  {
+    "shape": "object",
+    "path": "/api/v1/users/me",
+    "itemCount": 0,
+    "metaFields": null,
+    "fields": [
+      "id",
+      "email",
+      "displayName",
+      "role",
+      "monthlyIncomeCents",
+      "pushEnabled",
+      "budgetAlertsEnabled",
+      "missionRemindersEnabled",
+      "termsAccepted",
+      "aiConsentGranted",
+      "trainingConsentGranted",
+      "surveyAiConsentGranted",
+      "onboardingStatus"
+    ]
+  },
+  {
+    "shape": "array",
+    "path": "/api/v1/admin/users",
+    "itemCount": 2,
+    "metaFields": "cursor",
+    "fields": [
+      "id",
+      "email",
+      "displayName",
+      "role",
+      "isLocked",
+      "hasPassword",
+      "hasGoogleLink",
+      "createdAt",
+      "deletedAt"
+    ]
+  },
+  {
+    "shape": "array",
+    "path": "/api/v1/admin/audit-logs",
+    "itemCount": 2,
+    "metaFields": "cursor",
+    "fields": [
+      "id",
+      "userId",
+      "eventType",
+      "metadata",
+      "ipAddress",
+      "createdAt"
+    ]
+  },
+  {
+    "shape": "array",
+    "path": "/api/v1/admin/data-deletion-requests",
+    "itemCount": 0,
+    "metaFields": "cursor",
+    "fields": null
+  },
+  {
+    "shape": "array",
+    "path": "/api/v1/admin/categories",
+    "itemCount": 12,
+    "metaFields": null,
+    "fields": [
+      "id",
+      "name",
+      "slug",
+      "iconName",
+      "isActive",
+      "createdAt",
+      "updatedAt"
+    ]
+  },
+  {
+    "shape": "array",
+    "path": "/api/v1/admin/provider-configs",
+    "itemCount": 8,
+    "metaFields": null,
+    "fields": [
+      "id",
+      "providerKey",
+      "displayName",
+      "packageName",
+      "accountType",
+      "isActive",
+      "createdAt",
+      "updatedAt"
+    ]
+  },
+  {
+    "shape": "array",
+    "path": "/api/v1/admin/finance-methods",
+    "itemCount": 9,
+    "metaFields": null,
+    "fields": [
+      "id",
+      "code",
+      "name",
+      "summary",
+      "role",
+      "goalMode",
+      "paramDefs",
+      "eligibility",
+      "whyText",
+      "starterSteps",
+      "sortOrder",
+      "isActive",
+      "version",
+      "createdAt",
+      "updatedAt"
+    ]
+  },
+  {
+    "shape": "array",
+    "path": "/api/v1/admin/goal-templates",
+    "itemCount": 4,
+    "metaFields": null,
+    "fields": [
+      "id",
+      "code",
+      "name",
+      "description",
+      "defaultParams",
+      "isActive",
+      "createdAt",
+      "updatedAt"
+    ]
+  },
+  {
+    "shape": "array",
+    "path": "/api/v1/admin/survey-questions",
+    "itemCount": 10,
+    "metaFields": null,
+    "fields": [
+      "id",
+      "code",
+      "groupCode",
+      "text",
+      "showIf",
+      "sortOrder",
+      "isActive",
+      "options"
+    ]
+  },
+  {
+    "shape": "object",
+    "path": "/api/v1/admin/ai-stats",
+    "itemCount": 0,
+    "metaFields": null,
+    "fields": [
+      "production",
+      "aiService",
+      "aiServiceError"
+    ]
+  },
+  {
+    "shape": "object",
+    "path": "/api/v1/admin/ai-config/documents",
+    "itemCount": 6,
+    "metaFields": null,
+    "fields": [
+      "name",
+      "title",
+      "consumers",
+      "active_version",
+      "source",
+      "versions",
+      "preview_available"
+    ]
+  },
+  {
+    "shape": "object",
+    "path": "/api/v1/admin/ai-rules/meta",
+    "itemCount": 0,
+    "metaFields": null,
+    "fields": [
+      "category_groups",
+      "backend_slugs",
+      "keyword_kinds",
+      "max_keyword_chars",
+      "max_instruction_chars"
+    ]
+  },
+  {
+    "shape": "object",
+    "path": "/api/v1/admin/ai-rules/brands",
+    "itemCount": 1,
+    "metaFields": null,
+    "fields": [
+      "brand_key",
+      "category_slug",
+      "display_name",
+      "whole_word",
+      "is_active",
+      "source",
+      "updated_at"
+    ]
+  },
+  {
+    "shape": "object",
+    "path": "/api/v1/admin/ai-rules/keywords",
+    "itemCount": 1,
+    "metaFields": null,
+    "fields": [
+      "id",
+      "kind",
+      "category_slug",
+      "keyword",
+      "category_priority",
+      "is_active",
+      "source"
+    ]
+  },
+  {
+    "shape": "object",
+    "path": "/api/v1/admin/ai-rules/item-cache",
+    "itemCount": 1,
+    "metaFields": null,
+    "fields": [
+      "item_key",
+      "category_slug",
+      "hits",
+      "updated_at"
+    ]
+  },
+  {
+    "shape": "object",
+    "path": "/api/v1/admin/ai-rules/ai-instructions",
+    "itemCount": 1,
+    "metaFields": null,
+    "fields": [
+      "id",
+      "instruction_text",
+      "is_active",
+      "updated_at"
+    ]
+  },
+  {
+    "shape": "object",
+    "path": "/api/v1/admin/ai-rules/history",
+    "itemCount": 1,
+    "metaFields": null,
+    "fields": [
+      "id",
+      "resource",
+      "resource_key",
+      "action",
+      "before",
+      "after",
+      "actor_hash",
+      "reason",
+      "created_at"
+    ]
+  }
+]

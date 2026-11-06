@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.env
+*.tsbuildinfo
+.chrome-qa*/
+login-qa.png
+.ui-review/

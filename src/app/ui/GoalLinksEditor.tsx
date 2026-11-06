@@ -1,0 +1,13 @@
+import { useEffect, useState } from 'react';
+import { getAllPages, errorText } from '../../shared/api';
+import type { GoalTemplate } from '../../shared/models';
+import { JsonField, LoadingRows, PageError } from '../Shared';
+type Link={templateCode:string;conditions:unknown;sortOrder:number};
+function ConditionField({initial,onChange}:{initial:unknown;onChange:(value:unknown)=>void}){const [text,setText]=useState(()=>initial?JSON.stringify(initial,null,2):'');return <JsonField allowEmpty label="Điều kiện JSON" value={text} onChange={next=>{setText(next);try{onChange(next.trim()?JSON.parse(next):null)}catch{/* textarea validity blocks submission until corrected */}}}/>}
+export function GoalLinksEditor({value,onChange}:{value:string;onChange:(value:string)=>void}){
+  const [templates,setTemplates]=useState<GoalTemplate[]>([]),[loaded,setLoaded]=useState(false),[error,setError]=useState(''),[advanced,setAdvanced]=useState(false);
+  useEffect(()=>{getAllPages<GoalTemplate>('/admin/goal-templates',{includeInactive:true}).then(setTemplates).catch(e=>setError(errorText(e))).finally(()=>setLoaded(true))},[]);
+  let links:Link[]=[];try{const parsed=JSON.parse(value);if(Array.isArray(parsed))links=parsed}catch{/* JSON mode preserves malformed input */}
+  const change=(next:Link[])=>onChange(JSON.stringify(next,null,2));
+  return <div className="catalog-field"><div className="json-toolbar"><strong>Mẫu mục tiêu liên kết</strong><button className="btn btn--small" type="button" onClick={()=>setAdvanced(!advanced)}>{advanced?'Chọn mẫu':'JSON nâng cao'}</button></div><PageError message={error}/>{advanced?<JsonField label="Danh sách liên kết" value={value} onChange={onChange}/>:!loaded?<LoadingRows/>:<div className="link-template-list">{templates.map(template=>{const found=links.find(link=>link.templateCode===template.code);return <div className={`link-template ${found?'selected':''}`} key={template.id}><label className="fm-inline"><input type="checkbox" checked={Boolean(found)} onChange={event=>change(event.target.checked?[...links,{templateCode:template.code,conditions:null,sortOrder:links.length}]:links.filter(link=>link.templateCode!==template.code))}/><span>{template.name}<small>{template.code}{!template.isActive?' · Đã tắt':''}</small></span></label>{found&&<><label>Thứ tự<input type="number" value={found.sortOrder} onChange={event=>change(links.map(link=>link.templateCode===template.code?{...link,sortOrder:Number(event.target.value)}:link))}/></label><details><summary>Điều kiện áp dụng</summary><ConditionField initial={found.conditions} onChange={conditions=>change(links.map(link=>link.templateCode===template.code?{...link,conditions}:link))}/></details></>}</div>})}</div>}</div>;
+}
