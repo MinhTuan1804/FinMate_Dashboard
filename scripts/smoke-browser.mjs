@@ -44,7 +44,7 @@ try{
   await waitFor("location.pathname==='/users' && sessionStorage.getItem('finmate_token')!=='expired-test-token' && document.querySelector('h1')?.textContent==='Người dùng'",20000);
   assert.equal(await evaluate("document.querySelector('.workspace-switch')!==null"),false,'Sidebar không dùng bộ chuyển không gian');
   assert.ok(await evaluate("document.querySelector('.nav a[href=\"/users\"]')!==null && document.querySelector('.nav a[href=\"/ops/tickets\"]')!==null"),'Admin phải thấy cả hai nhóm trong cùng sidebar');
-  const routes=['/users','/roles','/audit-logs','/data-deletion','/categories','/providers','/finance-methods','/goal-templates','/survey','/settings/system','/settings/ai/dictionary','/settings/ai/rules','/settings/ai/knowledge','/settings/ai/rasa','/sync','/ai-learning','/profile'];
+  const routes=['/users','/roles','/audit-logs','/data-deletion','/categories','/providers','/finance-methods','/goal-templates','/survey','/settings/system','/settings/ai/dictionary','/settings/ai/rules','/settings/ai/knowledge','/sync','/ai-learning','/profile'];
   for(const route of routes){
     await navigate(route);
     await waitFor(`location.pathname===${JSON.stringify(route)} && document.querySelector('h1')!==null`,20000);

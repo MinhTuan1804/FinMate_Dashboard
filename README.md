@@ -16,7 +16,7 @@ Console dùng **một sidebar chung**. Admin thấy các mục quản trị và 
 
 Giao diện cập nhật ngày 06/11/2026: sidebar lưu trạng thái, tìm trang Ctrl+K, menu overlay trên tablet/mobile, bảng với menu thao tác và cột hành động cố định, drawer có focus trap và cảnh báo bỏ thay đổi, form tham số/phần liên kết mẫu mục tiêu, xem khác biệt cấu hình, và workspace xử lý ticket. Chi tiết ở [báo cáo cập nhật giao diện](docs/admin-ui-update-report-2026-11-06.md).
 
-Mục Cấu hình tách hai trang: `/settings/system` (Ứng dụng gồm bảo trì, phiên bản app và tính năng; Ngưỡng & đồng bộ; Giao diện app; Lịch sử thay đổi có khôi phục: đã nối `/admin/system-config`, mỗi lần lưu là một phiên bản và cần lý do. Tích hợp bên thứ ba và Trạng thái dịch vụ còn chờ backend) và `/settings/ai/{dictionary,rules,knowledge,rasa}`. Tab Định dạng thông báo ở Ngân hàng & Ví và trang Rasa (trạng thái, thử câu) đã nối qua `/admin/provider-formats` và `/admin/rasa`; huấn luyện Rasa vẫn chạy bằng script, không có API. Tài liệu cấu hình AI được gom vào Từ điển hoặc Luật theo trường `group` mà AI service trả về, admin không giữ bảng tên-nhóm riêng. Đường dẫn cũ `/settings?tab=ai|rasa`, `/ai-rules`, `/ai-config` vẫn chuyển hướng.
+Mục Cấu hình tách hai trang: `/settings/system` (Ứng dụng gồm bảo trì, phiên bản app và tính năng; Ngưỡng & đồng bộ; Giao diện app; Lịch sử thay đổi có khôi phục: đã nối `/admin/system-config`, mỗi lần lưu là một phiên bản và cần lý do. Tích hợp bên thứ ba và Trạng thái dịch vụ còn chờ backend) và `/settings/ai/{dictionary,rules,knowledge}`. Tab Định dạng thông báo ở Ngân hàng & Ví đã nối qua `/admin/provider-formats`. Tài liệu cấu hình AI được gom vào Từ điển hoặc Luật theo trường `group` mà AI service trả về, admin không giữ bảng tên-nhóm riêng. Đường dẫn cũ `/settings?tab=ai`, `/ai-rules`, `/ai-config` vẫn chuyển hướng.
 
 Luồng đăng nhập dùng `/auth/login`, `/users/me`, trạng thái OTP và `/ops/me`. Khi access token hết hạn, client thử `/auth/refresh` một lần. Đăng xuất gọi `/auth/logout`; đổi mật khẩu và đăng xuất tất cả thiết bị ở Hồ sơ. Lỗi tạm thời/429 khi tải phiên cho phép thử lại, không tự xóa phiên. Backend hiện trả refresh token trong JSON nên frontend lưu token trong `sessionStorage` của tab.
 
@@ -49,5 +49,5 @@ Remove-Item Env:FINMATE_ADMIN_EMAIL,Env:FINMATE_ADMIN_PASSWORD
 ## Chờ backend / dữ liệu kiểm thử
 
 - Đã xác minh response đọc bằng tài khoản Admin dev và lưu fixture chỉ chứa tên trường. Chưa chạy thao tác ghi trên dữ liệu đang dùng; các thao tác này cần môi trường thử nghiệm riêng để tránh thay đổi dữ liệu thật.
-- Các panel định dạng thông báo, secrets, cấu hình hệ thống và Rasa status/parse đã có đường gọi trong source. Huấn luyện Rasa vẫn dùng quy trình riêng.
+- Các panel định dạng thông báo, secrets và cấu hình hệ thống đã có đường gọi trong source.
 - Các màn vẫn chờ nguồn dữ liệu gồm đồng bộ danh mục sang AI, trạng thái hàng đợi local-first, danh sách dữ liệu học AI và một số số liệu tổng hợp. Không tự coi API thiếu đã sẵn sàng khi chỉ đổi giao diện.

@@ -13,7 +13,7 @@ import { OpsAiStatsPage } from './ops/OpsAiStatsPage';
 import { EconomicFeedsPage } from './EconomicFeedsPage';
 import { CatalogPage, DashboardPage, LogsPage, UsersPage, DeletionsPage } from './CorePages';
 import { AiLearningPage, ProfilePage, ProvidersPage, RolesPage, SyncPage } from './ExtraPages';
-import { AiSettingsLayout, DictionaryPage, KnowledgePage, RasaPage, RulesPage, SettingsRedirect, SystemSettingsPage } from './SettingsPages';
+import { AiSettingsLayout, DictionaryPage, KnowledgePage, RulesPage, SettingsRedirect, SystemSettingsPage } from './SettingsPages';
 import { SurveyPage } from './SurveyPage';
 import { FinanceMethodsPage } from './FinanceMethodsPage';
 import { AppShell } from './layout/AppShell';
@@ -48,7 +48,7 @@ export function App() {
     {!isAdmin&&<><Route path="/" element={<Navigate to={home} replace/>}/><Route path="/profile" element={<ProfilePage profile={profile} onLogout={signOut}/>}/></>}
     {isAdmin&&<><Route path="/" element={<DashboardPage/>}/><Route path="/users" element={<UsersPage currentUserId={profile?.id}/>}/><Route path="/roles" element={<RolesPage currentUserId={profile?.id}/>}/><Route path="/audit-logs" element={<LogsPage/>}/><Route path="/data-deletion" element={<DeletionsPage/>}/>
     <Route path="/categories" element={<CatalogPage kind="categories"/>}/><Route path="/providers" element={<ProvidersPage/>}/><Route path="/finance-methods" element={<FinanceMethodsPage/>}/><Route path="/goal-templates" element={<CatalogPage kind="goal-templates"/>}/><Route path="/survey" element={<SurveyPage/>}/>
-    <Route path="/settings" element={<SettingsRedirect/>}/><Route path="/settings/system" element={<SystemSettingsPage/>}/><Route path="/settings/economic" element={<EconomicFeedsPage/>}/><Route path="/settings/ai" element={<AiSettingsLayout/>}><Route index element={<Navigate to="dictionary" replace/>}/><Route path="dictionary" element={<DictionaryPage/>}/><Route path="rules" element={<RulesPage/>}/><Route path="knowledge" element={<KnowledgePage/>}/><Route path="rasa" element={<RasaPage/>}/></Route><Route path="/sync" element={<SyncPage/>}/><Route path="/ai-learning" element={<AiLearningPage/>}/><Route path="/profile" element={<ProfilePage profile={profile} onLogout={signOut}/>}/>
+    <Route path="/settings" element={<SettingsRedirect/>}/><Route path="/settings/system" element={<SystemSettingsPage/>}/><Route path="/settings/economic" element={<EconomicFeedsPage/>}/><Route path="/settings/ai" element={<AiSettingsLayout/>}><Route index element={<Navigate to="dictionary" replace/>}/><Route path="dictionary" element={<DictionaryPage/>}/><Route path="rules" element={<RulesPage/>}/><Route path="knowledge" element={<KnowledgePage/>}/></Route><Route path="/sync" element={<SyncPage/>}/><Route path="/ai-learning" element={<AiLearningPage/>}/><Route path="/profile" element={<ProfilePage profile={profile} onLogout={signOut}/>}/>
     <Route path="/dashboard" element={<Navigate to="/" replace/>}/><Route path="/provider-configs" element={<Navigate to="/providers" replace/>}/><Route path="/survey-questions" element={<Navigate to="/survey" replace/>}/><Route path="/ai-rules" element={<Navigate to="/settings/ai/rules" replace/>}/><Route path="/ai-config" element={<Navigate to="/settings/ai/dictionary" replace/>}/></>}
   </Route><Route path="*" element={<Navigate to="/" replace/>}/></Routes>;
 }
