@@ -13,6 +13,7 @@ const required = [
   ['get','/api/v1/admin/goal-templates'],['get','/api/v1/admin/survey-questions'],['post','/api/v1/admin/survey-questions/{id}/options'],
   ['get','/api/v1/admin/ai-stats'],['get','/api/v1/admin/ai-config/documents'],['post','/api/v1/admin/ai-config/documents/{name}/drafts'],
   ['post','/api/v1/admin/ai-config/documents/{name}/versions/{version}/preview'],['post','/api/v1/admin/ai-config/documents/{name}/versions/{version}/activate'],
+  ['get','/api/v1/admin/system-config'],['put','/api/v1/admin/system-config'],['get','/api/v1/admin/assumptions'],['post','/api/v1/admin/assumptions'],['post','/api/v1/admin/assumptions/{id}/approve'],['post','/api/v1/admin/assumptions/{id}/retire'],['post','/api/v1/admin/economic-feeds/refresh'],
   ['get','/api/v1/admin/ai-rules/meta'],['get','/api/v1/admin/ai-rules/brands'],['post','/api/v1/admin/ai-rules/keywords'],['post','/api/v1/admin/ai-rules/preview'],
 ];
 for (const [method,path] of required) assert.ok(swagger.paths?.[path]?.[method],`Thiếu ${method.toUpperCase()} ${path}`);

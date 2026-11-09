@@ -9,7 +9,7 @@ const adminGroups:NavGroup[]=[
   {title:'Tổng quan',links:[['/','Dashboard',LayoutDashboard]]},
   {title:'Tài khoản & quyền',links:[['/users','Người dùng',Users],['/roles','Phân quyền',UserCog],['/audit-logs','Nhật ký quản trị',Activity],['/data-deletion','Yêu cầu xóa dữ liệu',Shield]]},
   {title:'Danh mục tài chính',links:[['/categories','Danh mục',Tags],['/providers','Ngân hàng & ví',Wallet],['/finance-methods','Phương pháp tài chính',Database],['/goal-templates','Mẫu mục tiêu',Target],['/survey','Khảo sát',ClipboardCheck]]},
-  {title:'Cấu hình',links:[['/settings/system','Hệ thống',Settings2],['/settings/ai','Trí tuệ nhân tạo',Bot],['/sync','Đồng bộ dữ liệu',Activity],['/ai-learning','Học AI',BrainCircuit]]},
+  {title:'Cấu hình',links:[['/settings/system','Hệ thống',Settings2],['/settings/ai','Trí tuệ nhân tạo',Bot],['/settings/economic','Số liệu kinh tế',Landmark],['/sync','Đồng bộ dữ liệu',Activity],['/ai-learning','Học AI',BrainCircuit]]},
 ];
 const opsLinks:[string,string,LucideIcon,string][]=[['/ops/dashboard','Tổng quan',LayoutDashboard,'ViewDashboard'],['/ops/tickets','Hàng đợi ticket',Inbox,'HandleTickets'],['/ops/approvals','Đề xuất & duyệt',ClipboardCheck,'ProposeApprovals'],['/ops/monitoring','Giám sát hệ thống',HeartPulse,'ViewMonitoring'],['/ops/canned-replies','Câu trả lời mẫu',MessageSquareText,'ManageCannedReplies'],['/ops/audit','Nhật ký vận hành',Activity,'ViewOpsAudit'],['/ops/ai-stats','Thống kê AI',BrainCircuit,'ViewAiStats']];
 const subLabels:Record<string,string>={system:'Hệ thống',ai:'Trí tuệ nhân tạo',dictionary:'Từ điển',rules:'Luật',knowledge:'Kiến thức',rasa:'Rasa'};
