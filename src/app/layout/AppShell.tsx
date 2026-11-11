@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { Activity, ArrowRight, Bot, BrainCircuit, ChevronRight, ClipboardCheck, Database, HeartPulse, Inbox, Landmark, LayoutDashboard, LogOut, Menu, MessageSquareText, Moon, PanelLeftClose, Search, Settings2, Shield, Sun, Tags, Target, UserCog, Users, Wallet, X, type LucideIcon } from 'lucide-react';
+import { Activity, ArrowRight, Bot, BookOpen, BrainCircuit, ChevronRight, ClipboardCheck, Database, HeartPulse, Inbox, Landmark, LayoutDashboard, LogOut, Menu, MessageSquareText, Moon, PanelLeftClose, Search, Settings2, Shield, Sun, Tags, Target, UserCog, Users, Wallet, X, type LucideIcon } from 'lucide-react';
 import { ROLE_LABEL, type Profile } from '../../shared/api';
 import { DialogOverlay } from '../ui/DialogOverlay';
 
@@ -11,7 +11,7 @@ const adminGroups:NavGroup[]=[
   {title:'Danh mục tài chính',links:[['/categories','Danh mục',Tags],['/providers','Ngân hàng & ví',Wallet],['/finance-methods','Phương pháp tài chính',Database],['/goal-templates','Mẫu mục tiêu',Target],['/survey','Khảo sát',ClipboardCheck]]},
   {title:'Cấu hình',links:[['/settings/system','Hệ thống',Settings2],['/settings/ai','Trí tuệ nhân tạo',Bot],['/settings/economic','Số liệu kinh tế',Landmark],['/sync','Đồng bộ dữ liệu',Activity],['/ai-learning','Học AI',BrainCircuit]]},
 ];
-const opsLinks:[string,string,LucideIcon,string][]=[['/ops/dashboard','Tổng quan',LayoutDashboard,'ViewDashboard'],['/ops/tickets','Hàng đợi ticket',Inbox,'HandleTickets'],['/ops/approvals','Đề xuất & duyệt',ClipboardCheck,'ProposeApprovals'],['/ops/monitoring','Giám sát hệ thống',HeartPulse,'ViewMonitoring'],['/ops/canned-replies','Câu trả lời mẫu',MessageSquareText,'ManageCannedReplies'],['/ops/audit','Nhật ký vận hành',Activity,'ViewOpsAudit'],['/ops/ai-stats','Thống kê AI',BrainCircuit,'ViewAiStats']];
+const opsLinks:[string,string,LucideIcon,string][]=[['/ops/dashboard','Tổng quan',LayoutDashboard,'ViewDashboard'],['/ops/tickets','Hàng đợi ticket',Inbox,'HandleTickets'],['/ops/approvals','Đề xuất & duyệt',ClipboardCheck,'ProposeApprovals'],['/ops/knowledge','Tri thức AI',BookOpen,'DecideApprovals'],['/ops/assumptions','Giả định kinh tế',Landmark,'DecideApprovals'],['/ops/monitoring','Giám sát hệ thống',HeartPulse,'ViewMonitoring'],['/ops/canned-replies','Câu trả lời mẫu',MessageSquareText,'ManageCannedReplies'],['/ops/audit','Nhật ký vận hành',Activity,'ViewOpsAudit'],['/ops/ai-stats','Thống kê AI',BrainCircuit,'ViewAiStats']];
 const subLabels:Record<string,string>={system:'Hệ thống',ai:'Trí tuệ nhân tạo',dictionary:'Từ điển',rules:'Luật',knowledge:'Kiến thức'};
 
 export function AppShell({profile,caps,onLogout}:{profile:Profile;caps:string[];onLogout:()=>Promise<void>}){
