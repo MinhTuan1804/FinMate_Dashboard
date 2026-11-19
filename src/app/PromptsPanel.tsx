@@ -87,9 +87,8 @@ export function PromptsPanel() {
   return (
     <>
       <p className="fm-hint">
-        AI chỉ được chọn trong các cách quản lý đang bật. Nhiệm vụ, quy tắc đầu ra và việc coi dữ liệu người dùng là dữ liệu (không phải lệnh) do hệ thống giữ cố định;
-        ở đây chỉ chỉnh <strong>cách cân nhắc</strong> và giọng văn của lý do. Chỉ dẫn xấu làm AI chọn tệ hơn chứ không cho AI chọn ngoài danh sách (khi đó app dùng luật).
-        Chưa có cổng đo tự động: sau khi chuyển bản, hãy xin một gợi ý thử trên app rồi đọc lý do.
+        Điều chỉnh <strong>cách AI cân nhắc và giải thích</strong> khi gợi ý phương pháp tài chính. AI chỉ chọn trong những phương pháp đang bật.
+        Sau khi áp dụng phiên bản mới, hãy kiểm tra một gợi ý trên ứng dụng; hiện chưa có đánh giá chất lượng tự động cho phần chỉ dẫn này.
       </p>
       <PageError message={error} retry={() => void load()} />
       {notice && <div className="fm-success" role="status">{notice}</div>}
@@ -110,7 +109,7 @@ export function PromptsPanel() {
                   <button type="button" className="btn btn--small" disabled={item.is_active || busy} onClick={() => setConfirm(item)}>Dùng bản này</button>
                 </span>
               </div>
-              {open === item.prompt_version && <pre className="fm-json">{item.instruction_text}</pre>}
+              {open === item.prompt_version && <p className="module-prose readable-text">{item.instruction_text}</p>}
             </div>
           ))}
           {data && <OffsetPager offset={data.offset} limit={PAGE} total={data.total} onChange={setOffset} />}

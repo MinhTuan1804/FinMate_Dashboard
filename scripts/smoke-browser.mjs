@@ -44,7 +44,7 @@ try{
   await waitFor("location.pathname==='/users' && sessionStorage.getItem('finmate_token')!=='expired-test-token' && document.querySelector('h1')?.textContent==='Người dùng'",20000);
   assert.equal(await evaluate("document.querySelector('.workspace-switch')!==null"),false,'Sidebar không dùng bộ chuyển không gian');
   assert.ok(await evaluate("document.querySelector('.nav a[href=\"/users\"]')!==null && document.querySelector('.nav a[href=\"/ops/tickets\"]')!==null"),'Admin phải thấy cả hai nhóm trong cùng sidebar');
-  const routes=['/users','/roles','/audit-logs','/data-deletion','/categories','/providers','/finance-methods','/goal-templates','/survey','/settings/system','/settings/ai/dictionary','/settings/ai/rules','/settings/ai/knowledge','/settings/ai/rasa','/sync','/ai-learning','/profile'];
+  const routes=['/users','/roles','/audit-logs','/data-deletion','/categories','/providers','/finance-methods','/goal-templates','/survey','/settings/system','/settings/ai/dictionary','/settings/ai/rules','/settings/ai/knowledge','/sync','/ai-learning','/profile'];
   for(const route of routes){
     await navigate(route);
     await waitFor(`location.pathname===${JSON.stringify(route)} && document.querySelector('h1')!==null`,20000);
@@ -52,6 +52,13 @@ try{
     const error=await evaluate("document.querySelector('.error-box')?.textContent?.trim()||''");
     assert.equal(error,'',`${route} hiển thị lỗi: ${error}`);
   }
+  for(const legacy of ['/settings/ai/rasa','/settings?tab=rasa']){
+    await send('Page.navigate',{url:origin+legacy});
+    await waitFor("location.pathname==='/settings/ai/dictionary' && document.querySelector('h1')?.textContent==='Cấu hình AI'");
+  }
+  await navigate('/ai-learning');
+  await waitFor("document.querySelector('h1')?.textContent==='Học AI'");
+  assert.equal(await evaluate("Array.from(document.querySelectorAll('button')).some(b=>b.textContent==='Câu chưa hiểu')"),false,'Không còn tab gọi API unclear đã gỡ');
   const opsCaps=await evaluate("fetch('/api/v1/ops/me',{headers:{Authorization:'Bearer '+sessionStorage.getItem('finmate_token')}}).then(r=>r.json()).then(r=>r.data?.capabilities||[])");
   const opsRoutes=[['/ops/dashboard','ViewDashboard'],['/ops/tickets','HandleTickets'],['/ops/approvals','ProposeApprovals'],['/ops/canned-replies','ManageCannedReplies'],['/ops/monitoring','ViewMonitoring'],['/ops/audit','ViewOpsAudit'],['/ops/ai-stats','ViewAiStats']].filter(([,cap])=>opsCaps.includes(cap));
   for(const [route] of opsRoutes){await navigate(route);await waitFor(`location.pathname===${JSON.stringify(route)}&&document.querySelector('h1')!==null`,20000);await sleep(400);assert.equal(await evaluate("document.querySelector('.error-box')?.textContent?.trim()||''"),'',`${route} hiển thị lỗi`)}

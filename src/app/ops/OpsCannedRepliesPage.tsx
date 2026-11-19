@@ -26,7 +26,7 @@ export function OpsCannedRepliesPage() {
   const edit = (r: CannedReply) => { setEditing(r.id); setForm({ title: r.title, body: r.body }); };
 
   return <>
-    <PageHeader title="Câu trả lời mẫu" description="Nhân viên chèn các câu này vào khung trả lời ticket. Câu đã tắt không còn hiện cho nhân viên."/>
+    <PageHeader title="Câu trả lời mẫu" description="Nhân viên chèn các câu này vào khung trả lời ca hỗ trợ. Câu đã tắt không còn hiện cho nhân viên."/>
     <PageError message={error || list.error} retry={list.reload}/>
     <details className="fm-card fm-disclosure" open={editing?true:undefined}><summary>Thêm hoặc sửa câu trả lời mẫu</summary><form className="fm-card fm-form fm-form--stack" onSubmit={save}>
       <h2>{editing ? 'Sửa câu trả lời mẫu' : 'Thêm câu trả lời mẫu'}</h2>

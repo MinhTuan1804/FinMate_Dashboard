@@ -79,7 +79,7 @@ export function errorCode(e: unknown): string | undefined {
 }
 export const httpStatus = (e: unknown) => (axios.isAxiosError(e) ? e.response?.status : undefined);
 
-export const fmtDateTime = (v: string | null | undefined) => (v ? new Date(v).toLocaleString('vi-VN', { hour12: false }) : '—');
+export const fmtDateTime = (v: string | null | undefined) => (v ? new Date(v).toLocaleString('vi-VN', { hour12: false, timeZone:'Asia/Ho_Chi_Minh' }) : '—');
 export const fmtVnd = (cents: number) => `${new Intl.NumberFormat('vi-VN').format(cents)} ₫`;   // tiền là BIGINT đồng (VND), không chia 100
 export const fmtRate = (v: number | null) => (v === null ? '—' : `${Math.round(v * 100)}%`);
 

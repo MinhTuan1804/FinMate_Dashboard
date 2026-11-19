@@ -1,3 +1,4 @@
+import { useUrlState } from '../ui/useUrlState';
 import { useState, type FormEvent } from 'react';
 import { errorText, type OpsMe } from '../../shared/api';
 import { ConfirmDialog, ConfirmReasonDialog, EmptyState, LoadingRows, PageError, PageHeader } from '../Shared';
@@ -6,12 +7,12 @@ import { useServerList } from '../ui/useServerList';
 import { APPROVAL_STATUS_LABEL, APPROVAL_TYPES, APPROVAL_TYPE_LABEL, errorCode, fmtDateTime, httpStatus, post, type Approval, type ApprovalType } from './opsApi';
 
 const TONE: Record<string, string> = { Pending: 'warn', Approved: 'good', Rejected: '', Failed: 'bad' };
-const TARGET_HINT: Record<ApprovalType, string> = { UnlockUser: 'ID tài khoản khách đang bị khóa', CancelDeletion: 'ID tài khoản có yêu cầu xóa đang chờ', TransferGroupOwner: 'ID nhóm' };
+const TARGET_HINT: Record<ApprovalType, string> = { UnlockUser: 'Mã tài khoản khách đang bị khóa', CancelDeletion: 'ID tài khoản có yêu cầu xóa đang chờ', TransferGroupOwner: 'ID nhóm' };
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /** Đề xuất việc nhạy cảm (cần hai người: người đề xuất khác người duyệt). Staff chỉ thấy đề xuất của mình; OpsManager trở lên thấy và duyệt tất cả. */
 export function OpsApprovalsPage({ me }: { me: OpsMe }) {
-  const [status, setStatus] = useState('Pending'), [error, setError] = useState(''), [busy, setBusy] = useState(false);
+  const [status, setStatus] = useUrlState('status','Pending');const [error, setError] = useState(''), [busy, setBusy] = useState(false);
   const list = useServerList<Approval>('/ops/approvals', { params: { status: status || undefined } });
   const [form, setForm] = useState({ type: 'UnlockUser' as ApprovalType, targetId: '', newOwnerUserId: '', ticketId: '', reason: '' });
   const [decision, setDecision] = useState<{ item: Approval; kind: 'approve' | 'reject' } | null>(null);
@@ -20,7 +21,7 @@ export function OpsApprovalsPage({ me }: { me: OpsMe }) {
   async function propose(event: FormEvent) {
     event.preventDefault();
     const ids = [form.targetId, form.type === 'TransferGroupOwner' ? form.newOwnerUserId : '', form.ticketId].filter(Boolean);
-    if (!ids.every(v => UUID.test(v.trim()))) { setError('Các ID phải là mã UUID hợp lệ.'); return; }
+    if (!ids.every(v => UUID.test(v.trim()))) { setError('Kiểm tra lại định dạng mã tài khoản.'); return; }
     setBusy(true);
     try {
       await post('/ops/approvals', { type: form.type, targetId: form.targetId.trim(), newOwnerUserId: form.type === 'TransferGroupOwner' ? form.newOwnerUserId.trim() : undefined, ticketId: form.ticketId.trim() || undefined, reason: form.reason.trim() });

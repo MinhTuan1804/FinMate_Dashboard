@@ -1,26 +1,14 @@
+import { displayValue } from '../shared/labels';
 import { useCallback, useEffect, useState } from 'react';
+import { CAPABILITY_LABEL } from '../shared/permissions';
+import { queryClient } from '../shared/queryClient';
 import { api, errorText, getData } from '../shared/api';
 import { ConfirmReasonDialog, LoadingRows, PageError } from './Shared';
 
 type RoleRow = { role: string; editable: boolean; capabilities: string[] };
 type Matrix = { catalog: string[]; adminOnly: string[]; roles: RoleRow[] };
 
-const LABEL: Record<string, string> = {
-  HandleTickets: 'Xử lý ticket, nói chuyện với khách',
-  AccessCustomerData: 'Xin xem dữ liệu khách (khách phải đồng ý từng ca)',
-  CreateDraftTransactions: 'Tạo giao dịch nháp cho khách',
-  EmergencyLock: 'Khóa khẩn cấp tài khoản khách',
-  ProposeApprovals: 'Đề xuất việc nhạy cảm cần duyệt',
-  ManageTickets: 'Điều phối ticket (phân công, ưu tiên, gom ca)',
-  DecideApprovals: 'Duyệt hoặc từ chối đề xuất',
-  ViewDashboard: 'Xem dashboard vận hành',
-  ManageCannedReplies: 'Quản lý câu trả lời mẫu',
-  ViewOpsAudit: 'Xem audit vận hành',
-  ViewAiStats: 'Xem thống kê AI',
-  ViewMonitoring: 'Xem giám sát dịch vụ và sự cố',
-  ManageIncidents: 'Nhận xử lý và đóng sự cố',
-  ManageSystem: 'Quản trị hệ thống (/admin/*, chi tiết kỹ thuật sự cố)',
-};
+const LABEL = CAPABILITY_LABEL;
 /** Khớp RolePermissionRules ở backend: quyền bên trái cần có quyền bên phải. */
 const REQUIRES: Record<string, string> = { AccessCustomerData: 'HandleTickets', CreateDraftTransactions: 'AccessCustomerData' };
 const ORDER = ['User', 'Staff', 'OpsManager', 'Admin'];
@@ -64,6 +52,7 @@ export function RolePermissionsPanel() {
       for (const r of changed) {
         await api.put(`/admin/role-permissions/${r.role}`, { capabilities: [...(draft[r.role] ?? [])], reason });
         done.push(r.role);
+        void queryClient.invalidateQueries({queryKey:['/ops/me']});
       }
       setSuccess(`Đã lưu quyền của ${done.join(', ')}. Có hiệu lực ngay, người đang đăng nhập thấy menu mới sau khi tải lại.`); setConfirming(false); await load();
     } catch (e) {
@@ -78,15 +67,15 @@ export function RolePermissionsPanel() {
   };
   const summary = changed.map(r => {
     const d = diff(r);
-    return `${r.role} — thêm: ${d.added.map(c => LABEL[c] ?? c).join('; ') || 'không'}; thu hồi: ${d.removed.map(c => LABEL[c] ?? c).join('; ') || 'không'}.`;
+    return `${displayValue(r.role)} — thêm: ${d.added.map(c => LABEL[c] ?? c).join('; ') || 'không'}; thu hồi: ${d.removed.map(c => LABEL[c] ?? c).join('; ') || 'không'}.`;
   }).join(' ');
 
   return <div className="fm-card">
     <h2>Ma trận quyền</h2>
     <PageError message={error} retry={() => void load()}/>
     {success && <div className="fm-success">{success}</div>}
-    <p className="fm-hint">Tick để thêm quyền, bỏ tick để thu hồi. Chỉ Staff và OpsManager sửa được; Admin luôn đủ quyền. Một số quyền kéo theo quyền khác nên tự tick/bỏ tick theo.</p>
-    <div className="fm-table-wrap"><table className="fm-table"><thead><tr><th>Khả năng</th>{roles.map(r => <th key={r.role}>{r.role}</th>)}</tr></thead><tbody>
+    <p className="fm-hint">Chọn để cấp quyền, bỏ chọn để thu hồi. Bạn có thể điều chỉnh quyền của Nhân viên và Quản lý vận hành; Quản trị viên luôn có đầy đủ quyền. Các quyền phụ thuộc được cập nhật cùng nhau.</p>
+    <div className="fm-table-wrap"><table className="fm-table"><thead><tr><th>Khả năng</th>{roles.map(r => <th key={r.role}>{displayValue(r.role)}</th>)}</tr></thead><tbody>
       {data.catalog.map(capability => <tr key={capability}>
         <td title={capability}>{LABEL[capability] ?? capability}</td>
         {roles.map(r => {
@@ -94,7 +83,7 @@ export function RolePermissionsPanel() {
           const checked = (draft[r.role] ?? new Set()).has(capability);
           return <td key={r.role}>{locked
             ? (r.capabilities.includes(capability) ? 'Có' : '—')
-            : <input type="checkbox" aria-label={`${r.role}: ${LABEL[capability] ?? capability}`} checked={checked} onChange={e => toggle(r.role, capability, e.target.checked)}/>}</td>;
+            : <input type="checkbox" aria-label={`${displayValue(r.role)}: ${LABEL[capability] ?? capability}`} checked={checked} onChange={e => toggle(r.role, capability, e.target.checked)}/>}</td>;
         })}
       </tr>)}
     </tbody></table></div>
@@ -102,8 +91,8 @@ export function RolePermissionsPanel() {
       <button className="btn btn--primary" disabled={!changed.length || busy} onClick={() => setConfirming(true)}>Lưu quyền</button>{' '}
       <button className="btn" disabled={!changed.length || busy} onClick={() => setDraft(d => ({ ...d, ...Object.fromEntries(changed.map(r => [r.role, new Set(r.capabilities)])) }))}>Hoàn tác</button>
     </div>
-    <small>Staff và OpsManager chỉ gọi được /api/v1/ops/*. Tài khoản nội bộ phải xác thực OTP email khi backend bật OPS_REQUIRE_2FA.</small>
-    {confirming && changed.length > 0 && <ConfirmReasonDialog error={error} title={`Lưu quyền của ${changed.map(r => r.role).join(', ')}`} busy={busy} onCancel={() => setConfirming(false)} onConfirm={save}
+    <small>Nhân viên và Quản lý vận hành sử dụng các chức năng được cấp trong không gian vận hành. Mã xác thực email được yêu cầu khi hệ thống bật xác thực hai bước.</small>
+    {confirming && changed.length > 0 && <ConfirmReasonDialog error={error} title={`Lưu quyền của ${changed.map(r => displayValue(r.role)).join(', ')}`} busy={busy} onCancel={() => setConfirming(false)} onConfirm={save}
       description={summary}/>}
   </div>;
 }

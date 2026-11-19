@@ -12,7 +12,7 @@ export function OpsDashboardPage() {
   const [data, setData] = useState<Dashboard | null>(null), [error, setError] = useState('');
   const load = useCallback(async () => { try { setData(await list<Dashboard>('/ops/dashboard')); setError(''); } catch (e) { setError(errorText(e)); } }, []);
   useEffect(() => { queueMicrotask(() => void load()); }, [load]);
-  if (!data) return <><PageHeader title="Tổng quan vận hành" description="Tình hình ticket và đề xuất chờ duyệt."/><PageError message={error} retry={() => void load()}/>{!error && <LoadingRows/>}</>;
+  if (!data) return <><PageHeader title="Tổng quan vận hành" description="Tình hình ca hỗ trợ và đề xuất chờ duyệt."/><PageError message={error} retry={() => void load()}/>{!error && <LoadingRows/>}</>;
   return <>
     <PageHeader title="Tổng quan vận hành" description="Ca đang mở và chất lượng xử lý trong 30 ngày gần nhất."/>
     <PageError message={error} retry={() => void load()}/>
@@ -29,7 +29,7 @@ export function OpsDashboardPage() {
         <div className="fm-table-wrap"><table className="fm-table"><thead><tr><th>Mức</th><th>Số ca</th></tr></thead><tbody>{PRIORITIES.map(p => <tr key={p}><td>{p}</td><td>{countOf(data.openByPriority, p)}</td></tr>)}</tbody></table></div>
         <h3>Tải theo người</h3>
         {data.load.length === 0 ? <p className="fm-hint">Chưa ai đang giữ ca.</p> : <div className="fm-table-wrap"><table className="fm-table"><thead><tr><th>Người</th><th>Đang giữ</th><th>Trễ hạn</th></tr></thead><tbody>{data.load.map(l => <tr key={l.userId}><td>{l.displayName ?? l.userId}</td><td>{l.openCount}</td><td>{l.overdueCount > 0 ? <span className="fm-badge bad">{l.overdueCount}</span> : 0}</td></tr>)}</tbody></table></div>}
-        <p><Link to="/ops/tickets">Mở hàng đợi ticket →</Link></p>
+        <p><Link to="/ops/tickets">Mở hàng đợi ca hỗ trợ →</Link></p>
       </div>
       <div className="fm-card">
         <h2>{data.recentDays} ngày gần nhất</h2>

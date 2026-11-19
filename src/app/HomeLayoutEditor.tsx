@@ -74,7 +74,7 @@ function findProblems(blocks: HomeBlock[], params: ParamDef[], types: HomeBlockT
   blocks.forEach((block, index) => {
     const label = `Khối ${index + 1}`;
     const info = types.find(item => item.type === block.type);
-    if (!info) { problems.push(`${label}: loại "${block.type}" app không còn vẽ được.`); return; }
+    if (!info) { problems.push(`${label}: loại "${block.type}" ứng dụng không còn vẽ được.`); return; }
     if (!info.repeatable && seen.has(block.type)) problems.push(`${label}: "${info.name}" chỉ được xuất hiện một lần.`);
     seen.add(block.type);
     if (block.keys?.some(key => !params.some(param => param.key === key))) problems.push(`${label}: có tham số không còn tồn tại.`);
@@ -169,7 +169,7 @@ export function HomeLayoutEditor({ method, onClose, onSaved }: { method: Row; on
         <div className="fm-layout-body">
           <div className="fm-layout-editor">
             <p className="fm-hint">
-              Người dùng đang dùng cách này thấy các khối dưới đây theo đúng thứ tự, ở trang chủ app. Thêm hoặc bớt khối không cần phát hành lại app.
+              Người dùng đang dùng cách này thấy các khối dưới đây theo đúng thứ tự, ở trang chủ ứng dụng. Thêm hoặc bớt khối không cần phát hành lại ứng dụng.
               Số liệu từng khối (tiền khả dụng, mục tiêu, tham số của người dùng) luôn lấy từ dữ liệu thật của họ.
             </p>
             <PageError message={error} />
@@ -182,7 +182,7 @@ export function HomeLayoutEditor({ method, onClose, onSaved }: { method: Row; on
                     <div className="fm-block-head">
                       <div>
                         <strong>{index + 1}. {info?.name ?? block.type}</strong>
-                        <small>{info?.description ?? 'Loại khối này app không còn vẽ được; hãy xóa.'}</small>
+                        <small>{info?.description ?? 'Loại khối này ứng dụng không còn vẽ được; hãy xóa.'}</small>
                       </div>
                       <span className="fm-actions">
                         <button type="button" className="btn btn--small" aria-label={`Đưa khối ${index + 1} lên`} disabled={index === 0} onClick={() => move(index, -1)}><ArrowUp size={14} /></button>
@@ -192,7 +192,7 @@ export function HomeLayoutEditor({ method, onClose, onSaved }: { method: Row; on
                     </div>
 
                     <label className="fm-field">
-                      Tiêu đề (để trống = dùng tiêu đề mặc định của app)
+                      Tiêu đề (để trống = dùng tiêu đề mặc định của ứng dụng)
                       <input value={block.title ?? ''} maxLength={60} onChange={e => update(index, { title: e.target.value || undefined })} />
                     </label>
 

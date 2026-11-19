@@ -8,7 +8,9 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "lint": "eslint .",
+    "test:frontend": "node --test scripts/test-fe0.mjs scripts/test-dashboard.mjs",
     "test:contract": "node scripts/check-api-contract.mjs",
+    "test:modules": "node scripts/verify-dashboard-modules.mjs",
     "test:auth": "node scripts/check-auth-contract.mjs",
     "test:browser": "node scripts/smoke-browser.mjs"
   },
