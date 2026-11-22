@@ -29,7 +29,10 @@ export const INTERNAL_ROLES = ['Staff', 'OpsManager', 'Admin'];
 export const ROLE_LABEL: Record<string, string> = { User: 'Người dùng', Staff: 'Nhân viên (Staff)', OpsManager: 'Quản lý vận hành (OpsManager)', Admin: 'Quản trị viên (Admin)' };
 /** Cần OTP khi backend bật 2FA và phiên này chưa xác thực. */
 export async function needsOtp(): Promise<boolean> {
-  const status = await getData<OtpStatus>('/ops/auth/status');
+  // TẠM (cùng tab "Thử AI Agent"): backend chưa có khu /ops (404) thì không có 2FA để đòi. Mọi lỗi khác vẫn nổi lên. Khi xóa tab thử, trả lại 2 dòng gốc bên dưới.
+  let status: OtpStatus;
+  try { status = await getData<OtpStatus>('/ops/auth/status'); }
+  catch (error) { if (axios.isAxiosError(error) && error.response?.status === 404) return false; throw error; }
   return status.required && !status.verified;
 }
 export const sendOtp = () => api.post('/ops/auth/otp/send');

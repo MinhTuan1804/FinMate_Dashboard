@@ -11,7 +11,7 @@ type AppVersion={minVersion:string;latestVersion:string;forceUpdate:boolean;stor
 type Features={chatAi:boolean;voice:boolean;billScan:boolean;notificationReading:boolean};
 type Limits={alertT1Percent:number;alertT2Percent:number};
 type Sync={intervalMinutes:number;maxRetries:number;queueRetentionDays:number};
-type Theme={primaryColor:string|null;backgroundColor:string|null;navBarColor:string|null;fontFamily:string|null;textScale:number;logoUrl:string|null};
+type Theme={fontFamily:string|null;logoUrl:string|null};
 type QrTransfer={matchWindowMinutes:number;clockSkewMinutes:number;pendingLifetimeHours:number;maxAmount:number;maxMessageLength:number;defaultMessage:string;deeplinkHost:string;deeplinkReturnUrl:string};
 type FinanceMethods={recommendationReuseMinutes:number;supportMinSharePercent:number};
 type Doc={maintenance:Maintenance;appVersion:AppVersion;features:Features;limits:Limits;sync:Sync;theme:Theme;qrTransfer:QrTransfer;financeMethods:FinanceMethods};
@@ -22,6 +22,8 @@ type Props={section:'app'|'limits'|'appearance'|'history'};
 const base='/admin/system-config';
 const HISTORY_PAGE=10;
 const FONTS=['Be Vietnam Pro','Inter','Roboto','Nunito','Open Sans','Lexend','Montserrat'];
+/** Màu mặc định của app (Serene Glass) chỉ để minh họa: admin không còn đổi màu, màu do thiết kế trong app quyết định. */
+const APP_INK='#42638E',APP_SURFACE='#F4F7FC';
 const when=(iso:string|null|undefined)=>iso?new Date(iso).toLocaleString('vi-VN'):'—';
 
 export function SystemConfigPanel({section}:Props){
@@ -44,9 +46,9 @@ export function SystemConfigPanel({section}:Props){
   const toggle=(label:string,hint:string,checked:boolean,onChange:(value:boolean)=>void)=><label className="fm-field fm-switch-row"><input type="checkbox" checked={checked} onChange={e=>onChange(e.target.checked)}/><span><strong>{label}</strong><small>{hint}</small></span></label>;
   const number=(label:string,value:number,onChange:(value:number)=>void,step=1)=><label className="fm-field fm-field--inline">{label}<input type="number" step={step} value={value} onChange={e=>onChange(Number(e.target.value))}/></label>;
   const text=(label:string,value:string,onChange:(value:string)=>void,placeholder='')=><label className="fm-field">{label}<input value={value} placeholder={placeholder} onChange={e=>onChange(e.target.value)}/></label>;
-  const color=(label:string,key:'primaryColor'|'backgroundColor'|'navBarColor')=>{const value=draft.theme[key];return <label className="fm-field" key={key}>{label}<span className="fm-color-row"><input type="checkbox" checked={value==null} onChange={e=>set('theme',{[key]:e.target.checked?null:'#2E7D6B'})} aria-label="Dùng mặc định của app"/> <small>Dùng mặc định</small>{value!=null&&<><input type="color" value={value} onChange={e=>set('theme',{[key]:e.target.value.toUpperCase()})}/><code>{value}</code></>}</span></label>};
   const card=(title:string,children:ReactNode,hint?:string)=><div className="fm-card"><h2>{title}</h2>{hint&&<p className="fm-hint">{hint}</p>}{children}</div>;
   const theme=draft.theme;
+  const textFont=theme.fontFamily?`'${theme.fontFamily}', 'Be Vietnam Pro', sans-serif`:`'Be Vietnam Pro', sans-serif`;
 
   return <section>{navigationDialog}
     <PageError message={error} retry={()=>void load()}/><SuccessNotice message={notice}/>
@@ -73,14 +75,13 @@ export function SystemConfigPanel({section}:Props){
     </div>}
 
     {section==='appearance'&&<div className="fm-settings-grid">
-      {card('Màu sắc',<>{color('Màu chủ đạo','primaryColor')}{color('Màu nền','backgroundColor')}{color('Màu thanh điều hướng','navBarColor')}</>,'Bỏ chọn "Dùng mặc định" để đổi màu. Để mặc định thì app giữ giao diện có sẵn.')}
-      {card('Chữ',<><label className="fm-field">Font chữ (Google Fonts)<input list="fm-fonts" value={theme.fontFamily??''} placeholder="Mặc định của app" onChange={e=>set('theme',{fontFamily:e.target.value||null})}/><datalist id="fm-fonts">{FONTS.map(font=><option key={font} value={font}/>)}</datalist></label>
-        <label className="fm-field">Cỡ chữ toàn app: {theme.textScale.toFixed(2)}×<input type="range" min={0.8} max={1.5} step={0.05} value={theme.textScale} onChange={e=>set('theme',{textScale:Number(e.target.value)})}/></label></>,'Font không tải được thì app dùng font mặc định.')}
+      {card('Font chữ',<><label className="fm-field">Font cho mọi chữ trong app (Google Fonts)<input list="fm-fonts" value={theme.fontFamily??''} placeholder="Mặc định: Be Vietnam Pro" onChange={e=>set('theme',{fontFamily:e.target.value||null})}/><datalist id="fm-fonts">{FONTS.map(font=><option key={font} value={font}/>)}</datalist></label>
+        <p className="fm-hint" style={{fontFamily:textFont}}>Tiền ăn trưa hôm nay — Ăn uống</p></>,'Số tiền luôn dùng Inter để các con số thẳng cột. Màu sắc, sáng/tối và cỡ chữ do người dùng tự chọn trong app, admin không đè lên. Font không tải được thì app dùng font mặc định.')}
       {card('Logo',<>{text('Đường dẫn logo (https)',theme.logoUrl??'',value=>set('theme',{logoUrl:value||null}),'Để trống = logo mặc định')}{theme.logoUrl&&<img className="fm-logo-preview" src={theme.logoUrl} alt="Logo xem trước"/>}</>)}
-      {card('Xem trước',<div><span className="fm-badge">Minh họa giao diện</span><div className="fm-phone" style={{background:theme.backgroundColor??'#FFFFFF',fontFamily:theme.fontFamily?`'${theme.fontFamily}', sans-serif`:undefined,fontSize:`${14*theme.textScale}px`}}>
-        <div className="fm-phone-head" style={{background:theme.primaryColor??'#2E7D6B'}}>{theme.logoUrl?<img src={theme.logoUrl} alt="" height={22}/>:<strong>FinMate</strong>}</div>
-        <div className="fm-phone-body"><p>Số dư tháng này</p><strong>12.500.000 đ</strong><button type="button" style={{background:theme.primaryColor??'#2E7D6B'}}>Thêm giao dịch</button></div>
-        <div className="fm-phone-nav" style={{background:theme.navBarColor??'#F3F4F6'}}>Tổng quan · Giao dịch · Ngân sách</div></div></div>)}
+      {card('Xem trước',<div><span className="fm-badge">Minh họa giao diện</span><div className="fm-phone" style={{background:APP_SURFACE,fontFamily:textFont}}>
+        <div className="fm-phone-head" style={{background:APP_INK}}>{theme.logoUrl?<img src={theme.logoUrl} alt="" height={22}/>:<strong>FinMate</strong>}</div>
+        <div className="fm-phone-body"><p>Số dư tháng này</p><strong style={{fontFamily:"'Inter', sans-serif",fontVariantNumeric:'tabular-nums'}}>12.500.000 đ</strong><button type="button" style={{background:APP_INK}}>Thêm giao dịch</button></div>
+        <div className="fm-phone-nav">Tổng quan · Giao dịch · Ngân sách</div></div></div>)}
     </div>}
 
     {section==='history'&&<div className="fm-card"><div className="fm-toolbar"><h2>Lịch sử thay đổi</h2></div>
