@@ -1,3 +1,4 @@
+import { displayValue } from '../../shared/labels';
 import { useCallback, useEffect, useState, type FormEvent } from 'react';
 import { errorText, type OpsMe } from '../../shared/api';
 import { SCOPES, SCOPE_LABEL, fmtDateTime, fmtVnd, httpStatus, list, post, type AccessRequest, type CustomerAccount, type CustomerBudget, type CustomerTransactionPage, type Scope, type Ticket } from './opsApi';
@@ -23,19 +24,22 @@ export function CustomerDataPanel({ me, ticket, canAct }: { me: OpsMe; ticket: T
 
   const [now, setNow] = useState(0);   // mốc so hạn quyền; cập nhật mỗi lần tải để render không gọi Date.now()
   const loadRequests = useCallback(async () => {
-    if (!canAct) { setRequests([]); return; }   // backend chỉ cho người đang phụ trách ca đọc yêu cầu (Manager/Admin cũng phải nhận ca trước)
-    try { setRequests(await list<AccessRequest[]>(`${base}/access-requests`)); setNow(Date.now()); } catch (e) { setError(errorText(e)); }
+    if (!canAct) { setRequests([]);setAccounts(null);setBudgets(null);setTxs(null); return; }   // backend chỉ cho người đang phụ trách ca đọc yêu cầu (Manager/Admin cũng phải nhận ca trước)
+    try { setRequests(await list<AccessRequest[]>(`${base}/access-requests`)); setNow(Date.now()); } catch (e) { if(httpStatus(e)===403){setRequests([]);setAccounts(null);setBudgets(null);setTxs(null);}setError(errorText(e)); }
   }, [base, canAct]);
   useEffect(() => { queueMicrotask(() => void loadRequests()); }, [loadRequests]);
+  useEffect(()=>{const timer=setInterval(()=>setNow(Date.now()),15000);return()=>clearInterval(timer);},[]);
 
-  if (!me.capabilities.includes('AccessCustomerData')) return null;
   const granted = grantedScopes(requests, now);
+  const grantedAccounts=granted.has('Accounts'),grantedTransactions=granted.has('Transactions'),grantedBudgets=granted.has('Budgets');
+  useEffect(()=>{queueMicrotask(()=>{if(!canAct||!grantedAccounts)setAccounts(null);if(!canAct||!grantedTransactions)setTxs(null);if(!canAct||!grantedBudgets)setBudgets(null);});},[canAct,grantedAccounts,grantedTransactions,grantedBudgets]);
+  if (!me.capabilities.includes('AccessCustomerData')) return null;
   const pending = requests.some(r => r.status === 'Pending' && new Date(r.requestExpiresAt).getTime() > now);
 
   async function run(job: () => Promise<void>) {
     setBusy(true); setError('');
     try { await job(); }
-    catch (e) { setError(httpStatus(e) === 403 ? 'Không đọc được: quyền đã hết hạn, bị thu hồi, hoặc bạn không còn là người phụ trách ca.' : httpStatus(e) === 409 ? 'Đã có một yêu cầu đang chờ khách trả lời.' : errorText(e)); await loadRequests(); }
+    catch (e) { if(httpStatus(e)===403){setAccounts(null);setBudgets(null);setTxs(null);setRequests([]);}setError(httpStatus(e) === 403 ? 'Không đọc được: quyền đã hết hạn, bị thu hồi, hoặc bạn không còn là người phụ trách ca.' : httpStatus(e) === 409 ? 'Đã có một yêu cầu đang chờ khách trả lời.' : errorText(e)); await loadRequests(); }
     finally { setBusy(false); }
   }
   const toggle = (s: Scope) => setScopes(cur => (cur.includes(s) ? cur.filter(x => x !== s) : [...cur, s]));
@@ -55,7 +59,7 @@ export function CustomerDataPanel({ me, ticket, canAct }: { me: OpsMe; ticket: T
   };
 
   return <div className="fm-card">
-    <h2>Dữ liệu khách theo ca</h2>
+    <div className="fm-toolbar"><h2>Dữ liệu khách theo ca</h2><button className="btn btn--small" disabled={busy||!canAct} onClick={()=>void loadRequests()}>Làm mới quyền</button></div>
     <p className="fm-hint">Khách phải đồng ý từng phạm vi, hiệu lực tối đa 24 giờ và chấm dứt khi đổi người phụ trách. Mỗi lần đọc đều được ghi lại.</p>
     {error && <div className="error-box" role="alert">{error}</div>}
     {requests.length > 0 && <div className="fm-table-wrap"><table className="fm-table"><thead><tr><th>Phạm vi</th><th>Trạng thái</th><th>Lý do</th><th>Hiệu lực đến</th></tr></thead><tbody>
@@ -76,9 +80,9 @@ export function CustomerDataPanel({ me, ticket, canAct }: { me: OpsMe; ticket: T
         {granted.has('Transactions') && <button className="btn" disabled={busy} onClick={() => void loadTransactions()}>Xem giao dịch</button>}
         {granted.has('Budgets') && <button className="btn" disabled={busy} onClick={() => void run(async () => setBudgets(await list<CustomerBudget[]>(`${base}/customer-data/budgets`)))}>Xem ngân sách</button>}
       </div>
-      {accounts && <div className="fm-table-wrap"><table className="fm-table"><thead><tr><th>Ví</th><th>Loại</th><th>Số dư</th><th>Theo dõi</th></tr></thead><tbody>{accounts.map(a => <tr key={a.id}><td>{a.accountName}</td><td>{a.accountType}</td><td>{fmtVnd(a.balanceCents)}</td><td>{a.isMonitored ? 'Có' : 'Không'}</td></tr>)}</tbody></table></div>}
-      {budgets && <div className="fm-table-wrap"><table className="fm-table"><thead><tr><th>Danh mục</th><th>Kỳ</th><th>Hạn mức</th><th>Đã chi</th></tr></thead><tbody>{budgets.map(b => <tr key={b.id}><td>{b.categoryName ?? 'Tổng'}</td><td>{b.periodType}</td><td>{fmtVnd(b.limitCents)}</td><td>{fmtVnd(b.spentCents)}</td></tr>)}</tbody></table></div>}
-      {txs && <><div className="fm-table-wrap"><table className="fm-table"><thead><tr><th>Thời gian</th><th>Loại</th><th>Số tiền</th><th>Danh mục</th><th>Nơi chi / mô tả</th><th>Nguồn</th><th>Trạng thái</th></tr></thead><tbody>{txs.items.map(t => <tr key={t.id}><td>{fmtDateTime(t.transactedAt)}</td><td>{t.transactionType}</td><td>{fmtVnd(t.amountCents)}</td><td>{t.categoryName ?? '—'}</td><td title={t.description ?? ''}>{t.merchantName ?? t.description ?? '—'}</td><td>{t.source}</td><td>{t.status}</td></tr>)}</tbody></table></div>
+      {accounts && granted.has('Accounts') && <div className="fm-table-wrap"><table className="fm-table"><thead><tr><th>Ví</th><th>Loại</th><th>Số dư</th><th>Theo dõi</th></tr></thead><tbody>{accounts.map(a => <tr key={a.id}><td>{a.accountName}</td><td>{displayValue(a.accountType)}</td><td>{fmtVnd(a.balanceCents)}</td><td>{a.isMonitored ? 'Có' : 'Không'}</td></tr>)}</tbody></table></div>}
+      {budgets && granted.has('Budgets') && <div className="fm-table-wrap"><table className="fm-table"><thead><tr><th>Danh mục</th><th>Kỳ</th><th>Hạn mức</th><th>Đã chi</th></tr></thead><tbody>{budgets.map(b => <tr key={b.id}><td>{b.categoryName ?? 'Tổng'}</td><td>{displayValue(b.periodType)}</td><td>{fmtVnd(b.limitCents)}</td><td>{fmtVnd(b.spentCents)}</td></tr>)}</tbody></table></div>}
+      {txs && granted.has('Transactions') && <><div className="fm-table-wrap"><table className="fm-table"><thead><tr><th>Thời gian</th><th>Loại</th><th>Số tiền</th><th>Danh mục</th><th>Nơi chi / mô tả</th><th>Nguồn</th><th>Trạng thái</th></tr></thead><tbody>{txs.items.map(t => <tr key={t.id}><td>{fmtDateTime(t.transactedAt)}</td><td>{displayValue(t.transactionType)}</td><td>{fmtVnd(t.amountCents)}</td><td>{t.categoryName ?? '—'}</td><td title={t.description ?? ''}>{t.merchantName ?? t.description ?? '—'}</td><td>{displayValue(t.source)}</td><td>{displayValue(t.status)}</td></tr>)}</tbody></table></div>
         {txs.nextCursor && <button className="btn btn--small" disabled={busy} onClick={() => void loadTransactions(txs.nextCursor!)}>Tải thêm</button>}</>}
 
       {granted.has('Draft') && me.capabilities.includes('CreateDraftTransactions') && <form className="fm-form fm-form--stack" onSubmit={createDraft}>

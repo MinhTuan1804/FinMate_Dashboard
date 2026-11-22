@@ -1,13 +1,15 @@
 import { DialogOverlay } from './ui/DialogOverlay';
-import { useEffect, useId, useState, type FormEvent, type ReactNode } from 'react';
+import { useEffect, useId, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { useLocation } from 'react-router-dom';
 import { CheckCircle2, Inbox, X } from 'lucide-react';
 
 export function PageHeader({title,description,action}:{title:string;description:string;action?:ReactNode}) {
-  const location=useLocation();return <div className="fm-page-head"><div><div className="fm-eyebrow">FINMATE / {location.pathname.startsWith('/ops')?'VẬN HÀNH':'QUẢN TRỊ'}</div><h1>{title}</h1><p>{description}</p></div>{action}</div>;
+  const location=useLocation();return <div className="fm-page-head"><div className="fm-page-intro"><div className="fm-eyebrow"><span aria-hidden="true"/>{location.pathname.startsWith('/ops')?'Không gian vận hành':'Không gian quản trị'}</div><h1>{title}</h1><p>{description}</p></div>{action&&<div className="fm-page-actions">{action}</div>}</div>;
 }
 export function PageError({message,retry}:{message:string;retry?:()=>void}) {
-  return message?<div className="error-box" role="alert"><span>{message}</span>{retry&&<button className="btn btn--small" onClick={retry}>Thử lại</button>}</div>:null;
+  const target=useRef<HTMLDivElement>(null);
+  useEffect(()=>{if(message&&target.current?.closest('[role="dialog"]'))target.current.focus();},[message]);
+  return message?<div ref={target} className="error-box" role="alert" tabIndex={-1}><span>{message}</span>{retry&&<button type="button" className="btn btn--small" onClick={retry}>Thử lại</button>}</div>:null;
 }
 export function NotConnected({title,description}:{title:string;description:string}) {
   return <div className="fm-card fm-unavailable"><span className="fm-badge">Chưa kết nối</span><h2>{title}</h2><p>{description}</p></div>;
@@ -15,10 +17,10 @@ export function NotConnected({title,description}:{title:string;description:strin
 export function LoadingRows(){return <div className="fm-skeleton" aria-label="Đang tải dữ liệu">{[1,2,3,4].map(n=><div key={n}/>)}</div>}
 export function EmptyState({message='Chưa có dữ liệu'}:{message?:string}){return <div className="fm-empty"><Inbox size={25} strokeWidth={1.4}/><strong>{message}</strong></div>}
 export function CursorPager({back,next,onBack,onNext}:{back:boolean;next:boolean;onBack:()=>void;onNext:()=>void}){return <div className="fm-pagination"><button className="btn btn--small" disabled={!back} onClick={onBack}>Trang trước</button><button className="btn btn--small" disabled={!next} onClick={onNext}>Trang sau</button></div>}
-export function ConfirmReasonDialog({title,description,onCancel,onConfirm,busy=false,error=''}:{title:string;description:string;onCancel:()=>void;onConfirm:(reason:string)=>Promise<void>;busy?:boolean;error?:string}) {
+export function ConfirmReasonDialog({title,description,onCancel,onConfirm,busy=false,error='',children}:{title:string;description:string;onCancel:()=>void;onConfirm:(reason:string)=>Promise<void>;busy?:boolean;error?:string;children?:ReactNode}) {
   const [reason,setReason]=useState('');
   function submit(event:FormEvent){event.preventDefault();if(reason.trim())void onConfirm(reason.trim())}
-  return <DialogOverlay onClose={onCancel} busy={busy}><form className="fm-modal fm-modal--compact" role="dialog" aria-modal="true" aria-label={title} onSubmit={submit}><div className="fm-modal-head"><h2>{title}</h2></div><div className="fm-form"><PageError message={error}/><p>{description}</p><label>Lý do <textarea value={reason} onChange={e=>setReason(e.target.value)} required minLength={3} rows={4} autoFocus/></label></div><div className="fm-modal-foot"><button type="button" className="btn" onClick={onCancel} disabled={busy} data-dialog-close>Hủy</button><button className="btn btn--primary" disabled={busy||reason.trim().length<3}>{busy?'Đang xử lý...':'Xác nhận'}</button></div></form></DialogOverlay>;
+  return <DialogOverlay onClose={onCancel} busy={busy}><form className={children?'fm-modal fm-modal--wide':'fm-modal fm-modal--compact'} role="dialog" aria-modal="true" aria-label={title} onSubmit={submit}><div className="fm-modal-head"><h2>{title}</h2></div><div className="fm-form"><PageError message={error}/><p>{description}</p>{children}<label>Lý do <textarea value={reason} onChange={e=>setReason(e.target.value)} required minLength={3} rows={4} autoFocus/></label></div><div className="fm-modal-foot"><button type="button" className="btn" onClick={onCancel} disabled={busy} data-dialog-close>Hủy</button><button className="btn btn--primary" disabled={busy||reason.trim().length<3}>{busy?'Đang xử lý...':'Xác nhận'}</button></div></form></DialogOverlay>;
 }
 export function ConfirmDialog({title,description,onCancel,onConfirm,busy=false,error=''}:{title:string;description:string;onCancel:()=>void;onConfirm:()=>Promise<void>;busy?:boolean;error?:string}) {
   return <DialogOverlay onClose={onCancel} busy={busy}><div className="fm-modal fm-modal--compact" role="dialog" aria-modal="true" aria-label={title}><div className="fm-modal-head"><h2>{title}</h2></div><div className="fm-form"><PageError message={error}/><p>{description}</p></div><div className="fm-modal-foot"><button className="btn" onClick={onCancel} disabled={busy} data-dialog-close>Hủy</button><button className="btn btn--primary" onClick={()=>void onConfirm()} disabled={busy}>{busy?'Đang xử lý...':'Xác nhận'}</button></div></div></DialogOverlay>;

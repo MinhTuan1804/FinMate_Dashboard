@@ -1,111 +1,64 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { errorText, getEnvelope } from '../../shared/api';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { lastOffset, nonNegativeInt, unpackPage } from '../../shared/listState';
+import { useResource } from './useResource';
 
 type Params = Record<string, unknown>;
 type Options = { params?: Params; limit?: number; searchParam?: string; debounceMs?: number; enabled?: boolean };
 
-/** Hai dạng phản hồi danh sách của hệ thống: backend .NET (`data` là mảng, `meta.total`) và ai-service/ops tickets (`data` là `{items,total}`). */
-function unpack<T>(data: unknown, total?: number): { rows: T[]; total: number } {
-  if (Array.isArray(data)) return { rows: data as T[], total: total ?? data.length };
-  const page = data as { items?: T[]; total?: number } | null;
-  const rows = page?.items ?? [];
-  return { rows, total: page?.total ?? total ?? rows.length };
-}
-
-/** Ô tìm kiếm có trì hoãn: `search` đổi theo từng phím, `query` (giá trị gửi lên API) chỉ đổi sau `debounceMs`; xóa trắng thì áp dụng ngay. */
-function useDebouncedSearch(debounceMs: number) {
-  const [search, setSearchText] = useState(''), [query, setQuery] = useState('');
+function useListLocation(path: string, params: Params, debounceMs: number) {
+  const [url, setUrl] = useSearchParams();
+  const prefix = `${path.split('/').filter(Boolean).at(-1)}.`;
+  const searchKey = `${prefix}search`, pageKey = `${prefix}offset`, cursorKey = `${prefix}cursor`;
+  const committed = url.get(searchKey) || '';
+  const [search, setText] = useState(committed);
+  const paramScope = JSON.stringify(params);
+  const previous = useRef(paramScope);
+  const write = useCallback((key: string, value: string, reset = false) => {
+    setUrl(current => {
+      const next = new URLSearchParams(current);
+      if (value) next.set(key, value); else next.delete(key);
+      if (reset) { next.delete(pageKey); next.delete(cursorKey); }
+      return next;
+    }, { replace: true });
+  }, [setUrl, pageKey, cursorKey]);
+  useEffect(() => { queueMicrotask(() => setText(committed)); }, [committed]);
   useEffect(() => {
-    if (!search.trim()) return;
-    const timer = setTimeout(() => setQuery(search.trim()), debounceMs);
+    if (search.trim() === committed) return;
+    const timer = setTimeout(() => write(searchKey, search.trim(), true), search.trim() ? debounceMs : 0);
     return () => clearTimeout(timer);
-  }, [search, debounceMs]);
-  const setSearch = useCallback((value: string) => {
-    setSearchText(value);
-    if (!value.trim()) setQuery('');
-  }, []);
-  return { search, query, setSearch };
+  }, [search, committed, debounceMs, write, searchKey]);
+  useEffect(() => {
+    if (previous.current !== paramScope) { previous.current = paramScope; write(pageKey, '', true); }
+  }, [paramScope, write, pageKey]);
+  return { url, write, search, setSearch: setText, query: committed, pageKey, cursorKey };
 }
 
-/**
- * Danh sách do SERVER cắt trang (offset/limit) và tìm kiếm: đổi từ khóa, bộ lọc hay trang thì gọi lại API, không tải hết rồi lọc ở trình duyệt.
- * Đổi từ khóa/bộ lọc thì về trang đầu; kết quả của request cũ đến muộn bị bỏ để không ghi đè kết quả mới.
- */
+/** Server pagination, shareable URL, request cancellation and a shared query cache. */
 export function useServerList<T>(path: string, { params = {}, limit = 20, searchParam = 'search', debounceMs = 400, enabled = true }: Options = {}) {
-  const { search, query, setSearch } = useDebouncedSearch(debounceMs);
-  const [state, setState] = useState({ scope: '', offset: 0 });
-  const [data, setData] = useState<{ rows: T[]; total: number }>({ rows: [], total: 0 });
-  const [loading, setLoading] = useState(enabled), [error, setError] = useState(''), [tick, setTick] = useState(0);
-
-  const scope = JSON.stringify([path, params, query, limit]);
-  const offset = state.scope === scope ? state.offset : 0;   // đổi từ khóa/bộ lọc → về trang đầu mà không cần effect
-
+  const location = useListLocation(path, params, debounceMs);
+  const offset = nonNegativeInt(location.url.get(location.pageKey));
+  const resource = useResource<unknown>(path, { ...params, [searchParam]: location.query || undefined, limit, offset }, enabled);
+  const page = unpackPage<T>(resource.data, resource.meta?.total);
+  const {write,pageKey}=location;
+  const setOffset = useCallback((value: number) => write(pageKey, String(Math.max(0, value))), [write,pageKey]);
   useEffect(() => {
-    if (!enabled) return;
-    let current = true;
-    queueMicrotask(async () => {
-      if (!current) return;
-      setLoading(true);
-      try {
-        const envelope = await getEnvelope<unknown>(path, { ...params, [searchParam]: query || undefined, limit, offset });
-        if (!current) return;
-        const page = unpack<T>(envelope.data, envelope.meta?.total);
-        if (page.rows.length === 0 && page.total > 0 && offset > 0) {   // xóa hết dòng của trang cuối → lùi về trang cuối còn dữ liệu
-          setState({ scope, offset: Math.floor((page.total - 1) / limit) * limit });
-          return;
-        }
-        setData(page);
-        setError('');
-      } catch (e) {
-        if (current) setError(errorText(e));
-      } finally {
-        if (current) setLoading(false);
-      }
-    });
-    return () => { current = false; };
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- `params` đã nằm trong `scope` (JSON), tránh gọi lại mỗi lần render vì object mới
-  }, [path, scope, offset, limit, searchParam, tick, enabled]);
-
-  const setOffset = useCallback((value: number) => setState({ scope, offset: Math.max(0, value) }), [scope]);
-  const reload = useCallback(() => setTick(n => n + 1), []);
-
-  return { rows: data.rows, total: data.total, offset, limit, loading, error, search, setSearch, setOffset, reload };
+    if (!resource.loading && !resource.error && page.rows.length === 0 && page.total > 0 && offset > 0) setOffset(lastOffset(page.total, limit));
+  }, [resource.loading, resource.error, page.rows.length, page.total, offset, limit, setOffset]);
+  return { ...resource, ...page, offset, limit, search: location.search, setSearch: location.setSearch, setOffset };
 }
 
-/** Như `useServerList` nhưng cho API phân trang bằng cursor (bảng lớn: người dùng, nhật ký): chỉ có "trang trước/sau", không có tổng. */
+/** Cursor itself is shareable; the in-session stack provides Previous without inventing offsets. */
 export function useCursorList<T>(path: string, { params = {}, limit = 20, searchParam = 'search', debounceMs = 400 }: Omit<Options, 'enabled'> = {}) {
-  const { search, query, setSearch } = useDebouncedSearch(debounceMs);
-  const [state, setState] = useState<{ scope: string; stack: (string | null)[] }>({ scope: '', stack: [null] });
-  const [data, setData] = useState<{ rows: T[]; next: string | null }>({ rows: [], next: null });
-  const [loading, setLoading] = useState(true), [error, setError] = useState(''), [tick, setTick] = useState(0);
-
-  const scope = JSON.stringify([path, params, query, limit]);
-  const stack = useMemo(() => (state.scope === scope ? state.stack : [null]), [state, scope]);   // đổi từ khóa/bộ lọc → về trang đầu
-  const cursor = stack.at(-1) ?? null;
-
-  useEffect(() => {
-    let current = true;
-    queueMicrotask(async () => {
-      if (!current) return;
-      setLoading(true);
-      try {
-        const envelope = await getEnvelope<T[]>(path, { ...params, [searchParam]: query || undefined, cursor: cursor ?? undefined, limit });
-        if (!current) return;
-        setData({ rows: envelope.data, next: envelope.meta?.cursor ?? null });
-        setError('');
-      } catch (e) {
-        if (current) setError(errorText(e));
-      } finally {
-        if (current) setLoading(false);
-      }
-    });
-    return () => { current = false; };
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- `params` đã nằm trong `scope` (JSON)
-  }, [path, scope, cursor, limit, searchParam, tick]);
-
-  const next = useCallback(() => data.next && setState({ scope, stack: [...stack, data.next] }), [data.next, scope, stack]);
-  const back = useCallback(() => setState({ scope, stack: stack.slice(0, -1) }), [scope, stack]);
-  const reload = useCallback(() => setTick(n => n + 1), []);
-
-  return { rows: data.rows, hasBack: stack.length > 1, hasNext: Boolean(data.next), loading, error, search, setSearch, next, back, reload };
+  const location = useListLocation(path, params, debounceMs);
+  const cursor = location.url.get(location.cursorKey) || null;
+  const [stack, setStack] = useState<(string | null)[]>([]);
+  const scope = JSON.stringify([path, params, location.query]);
+  const previousScope = useRef(scope);
+  useEffect(() => { if (previousScope.current !== scope) { previousScope.current = scope; queueMicrotask(() => setStack([])); } }, [scope]);
+  const resource = useResource<T[]>(path, { ...params, [searchParam]: location.query || undefined, limit, cursor: cursor || undefined });
+  const nextCursor = resource.meta?.cursor || null;
+  function next() { if (nextCursor) { setStack(s => [...s, cursor]); location.write(location.cursorKey, nextCursor); } }
+  function back() { location.write(location.cursorKey, stack.at(-1) || ''); setStack(s => s.slice(0, -1)); }
+  return { ...resource, rows: resource.data || [], hasBack: Boolean(cursor), hasNext: Boolean(nextCursor), search: location.search, setSearch: location.setSearch, next, back };
 }

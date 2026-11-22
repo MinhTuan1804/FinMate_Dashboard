@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, type FormEvent } from 'react';
+import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { errorText, fetchBlob, getAllPages, type OpsMe } from '../../shared/api';
 import { ConfirmReasonDialog, LoadingRows, PageError, PageHeader } from '../Shared';
@@ -33,15 +33,17 @@ function MessageRow({ ticketId, message }: { ticketId: string; message: Message 
 /** Chi tiết ca: thread, trả lời, đổi trạng thái, chuyển cấp, khóa khẩn cấp, dữ liệu khách theo ca và (nếu có quyền) điều phối. */
 export function OpsTicketDetailPage({ me }: { me: OpsMe }) {
   const { id = '' } = useParams();
+  const requestGeneration=useRef(0);
   const [detail, setDetail] = useState<TicketDetail | null>(null), [error, setError] = useState(''), [forbidden, setForbidden] = useState(false), [busy, setBusy] = useState(false);
   const [body, setBody] = useState(''), [internal, setInternal] = useState(false), [canned, setCanned] = useState<CannedReply[]>([]);
   const [panel,setPanel]=useState<'thread'|'customer'>('thread');
   const [dialog, setDialog] = useState<'escalate' | 'lock' | null>(null), [status, setStatus] = useState('');
   const load = useCallback(async () => {
-    try { setDetail(await ticket(id)); setError(''); setForbidden(false); }
-    catch (e) { if (httpStatus(e) === 403) setForbidden(true); else setError(errorText(e)); }
+    const generation=++requestGeneration.current;try {const next=await ticket(id);if(generation!==requestGeneration.current)return;setDetail(next);setError('');setForbidden(false); }
+    catch (e) {if(generation!==requestGeneration.current)return;if(httpStatus(e)===403){setForbidden(true);setDetail(null);}else setError(errorText(e));}
   }, [id]);
-  useEffect(() => { queueMicrotask(() => void load()); }, [load]);
+  const cancelLoad=useCallback(()=>{requestGeneration.current++;},[]);
+  useEffect(() => { queueMicrotask(()=>{setDetail(null);setBody('');setPanel('thread');void load();});return cancelLoad; }, [load,cancelLoad]);
   useEffect(() => { getAllPages<CannedReply>('/ops/canned-replies').then(setCanned).catch(() => setCanned([])); }, []);
 
   const can = (c: string) => me.capabilities.includes(c);
@@ -56,7 +58,7 @@ export function OpsTicketDetailPage({ me }: { me: OpsMe }) {
   const setTicketStatus = () => status && act(() => patch<TicketDetail>(`/ops/tickets/${id}/status`, { status }), () => setStatus(''));
 
   if (forbidden) return <><PageHeader title="Chi tiết ca" description=""/><div className="fm-card"><p>Bạn không xem được ca này: ca đã có người khác nhận, hoặc ca do chính bạn tạo.</p><Link to="/ops/tickets">← Về hàng đợi</Link></div></>;
-  if (!detail) return <><PageHeader title="Chi tiết ca" description=""/><PageError message={error} retry={() => void load()}/><LoadingRows/></>;
+  if (!detail) return <><PageHeader title="Chi tiết ca" description=""/><PageError message={error} retry={() => void load()}/>{!error&&<LoadingRows/>}</>;
 
   const t = detail.ticket, closed = t.status === 'Closed';
   const mine = t.assigneeUserId === me.id, manager = can('ManageTickets');
@@ -105,7 +107,7 @@ export function OpsTicketDetailPage({ me }: { me: OpsMe }) {
         {manager && <details className="fm-card fm-disclosure"><summary>Điều phối & thao tác nâng cao</summary><TicketManagePanel ticket={t} busy={busy} act={act} reload={load}/></details>}
       </div>
     </div>
-    {dialog === 'escalate' && <ConfirmReasonDialog error={error} title="Chuyển cấp ca" description="Ghi rõ bạn đã thử gì. Ca sang trạng thái Chuyển cấp và chỉ Manager trở lên đổi được." busy={busy} onCancel={() => setDialog(null)} onConfirm={async note => { await act(() => post<TicketDetail>(`/ops/tickets/${id}/escalate`, { note }), () => setDialog(null)); }}/>}
-    {dialog === 'lock' && <ConfirmReasonDialog error={error} title="Khóa khẩn cấp tài khoản khách" description="Khóa ngay tài khoản của khách đã tạo ca này và chuyển ca sang Chuyển cấp để Manager rà soát. Không khóa được tài khoản nội bộ." busy={busy} onCancel={() => setDialog(null)} onConfirm={async reason => { await act(async () => { await post(`/ops/users/${t.requesterUserId}/emergency-lock`, { ticketId: id, reason }); await load(); }, () => setDialog(null)); }}/>}
+    {dialog === 'escalate' && <ConfirmReasonDialog error={error} title="Chuyển cấp ca" description="Ghi rõ bạn đã thử gì. Ca sang trạng thái Chuyển cấp và chỉ Quản lý vận hành trở lên đổi được." busy={busy} onCancel={() => setDialog(null)} onConfirm={async note => { await act(() => post<TicketDetail>(`/ops/tickets/${id}/escalate`, { note }), () => setDialog(null)); }}/>}
+    {dialog === 'lock' && <ConfirmReasonDialog error={error} title="Khóa khẩn cấp tài khoản khách" description="Khóa ngay tài khoản của khách đã tạo ca này và chuyển ca sang Chuyển cấp để Quản lý vận hành rà soát. Không khóa được tài khoản nội bộ." busy={busy} onCancel={() => setDialog(null)} onConfirm={async reason => { await act(async () => { await post(`/ops/users/${t.requesterUserId}/emergency-lock`, { ticketId: id, reason }); await load(); }, () => setDialog(null)); }}/>}
   </>;
 }

@@ -1,3 +1,4 @@
+import { useNavigationGuard } from './NavigationGuard';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 
@@ -9,16 +10,14 @@ export function DialogOverlay({children,onClose,guardChanges=false,busy=false,di
   const snapshot=()=>JSON.stringify(Array.from(root.current?.querySelectorAll('input,select,textarea')||[]).map(control=>{const field=control as HTMLInputElement;return field.type==='checkbox'?field.checked:field.value}));
   const latestDirty=useRef(explicitDirty);useEffect(()=>{latestDirty.current=explicitDirty},[explicitDirty]);
   const dirty=()=>latestDirty.current??(guardChanges&&snapshot()!==initial.current);
+  useNavigationGuard(()=>Boolean(guardChanges&&dirty()),busy);
   useEffect(()=>{
     const previous=document.activeElement as HTMLElement|null;
     initial.current=snapshot();
     const focus=root.current?.querySelector<HTMLElement>('[autofocus]')||root.current?.querySelector<HTMLElement>(controls);
     focus?.focus();
-    const unload=(event:BeforeUnloadEvent)=>{if(dirty()){event.preventDefault();event.returnValue=''}};
-    window.addEventListener('beforeunload',unload);
-    return()=>{window.removeEventListener('beforeunload',unload);if(previous?.isConnected)previous.focus()};
+    return()=>{if(previous?.isConnected)previous.focus()};
   // Snapshot is deliberately captured once per opening, not after user edits.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   },[]);
   function close(){if(busy)return;if(dirty())setDiscard(true);else onClose()}
   return createPortal(<div ref={root} className="fm-overlay" onMouseDown={event=>{if(event.target===event.currentTarget)close()}} onClickCapture={event=>{if((event.target as HTMLElement).closest('[data-dialog-close]')){event.preventDefault();event.stopPropagation();close()}}} onKeyDown={event=>{

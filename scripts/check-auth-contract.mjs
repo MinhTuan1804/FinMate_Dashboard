@@ -11,6 +11,7 @@ assert.equal(login.status,200,'Đăng nhập Admin thất bại');
 const session = (await login.json()).data;
 assert.ok(session?.accessToken,'Thiếu access token');
 const headers = {authorization:`Bearer ${session.accessToken}`};
+try {
 const me = await fetch(`${origin}/api/v1/users/me`,{headers});
 assert.equal((await me.json()).data?.role,'Admin','Tài khoản không có vai trò Admin');
 for (const fixture of fixtures) {
@@ -25,3 +26,9 @@ for (const fixture of fixtures) {
   if (fixture.metaFields) for (const field of [fixture.metaFields].flat()) assert.ok(Object.hasOwn(envelope.meta||{},field),`${fixture.path} thiếu meta.${field}`);
 }
 console.log(`Đạt: đăng nhập Admin và ${fixtures.length} response có xác thực khớp fixture`);
+} finally {
+  await fetch(`${origin}/api/v1/auth/logout`, {
+    method: 'POST', headers: { ...headers, 'content-type': 'application/json' },
+    body: JSON.stringify({ refreshToken: session.refreshToken }),
+  }).catch(() => {});
+}

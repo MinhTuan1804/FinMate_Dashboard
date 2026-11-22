@@ -1,0 +1,1136 @@
+{
+  "MaintenanceSettings": {
+    "enabled": {
+      "type": "bool"
+    },
+    "title": {
+      "type": "string",
+      "default": "FinMate đang bảo trì",
+      "maxLength": 80
+    },
+    "message": {
+      "type": "string",
+      "default": "Chúng tôi đang nâng cấp hệ thống để phục vụ bạn tốt hơn. Vui lòng quay lại sau ít phút.",
+      "maxLength": 500
+    },
+    "estimatedEndAt": {
+      "type": "DateTimeOffset?"
+    }
+  },
+  "AppVersionSettings": {
+    "minVersion": {
+      "type": "string",
+      "default": "1.0.0"
+    },
+    "latestVersion": {
+      "type": "string",
+      "default": "1.0.0"
+    },
+    "forceUpdate": {
+      "type": "bool"
+    },
+    "storeUrl": {
+      "type": "string"
+    }
+  },
+  "FeatureSettings": {
+    "chatAi": {
+      "type": "bool",
+      "default": true
+    },
+    "voice": {
+      "type": "bool",
+      "default": true
+    },
+    "billScan": {
+      "type": "bool",
+      "default": true
+    },
+    "notificationReading": {
+      "type": "bool",
+      "default": true
+    },
+    "groups": {
+      "type": "bool"
+    },
+    "support": {
+      "type": "bool"
+    },
+    "marketAlerts": {
+      "type": "bool"
+    },
+    "community": {
+      "type": "bool"
+    },
+    "subscriptions": {
+      "type": "bool"
+    },
+    "groupFunds": {
+      "type": "bool"
+    }
+  },
+  "GroupSettings": {
+    "maxMembers": {
+      "type": "int",
+      "default": 20,
+      "min": 2.0,
+      "max": 100.0
+    },
+    "maxGroupsPerUser": {
+      "type": "int",
+      "default": 5,
+      "min": 1.0,
+      "max": 50.0
+    },
+    "maxPendingInvitations": {
+      "type": "int",
+      "default": 20,
+      "min": 1.0,
+      "max": 200.0
+    },
+    "invitationTtlDays": {
+      "type": "int",
+      "default": 7,
+      "min": 1.0,
+      "max": 30.0
+    },
+    "maxFundsPerGroup": {
+      "type": "int",
+      "default": 3,
+      "min": 1.0,
+      "max": 20.0
+    }
+  },
+  "SupportSettings": {
+    "p1FirstResponseMinutes": {
+      "type": "int",
+      "default": 15
+    },
+    "p1ResolveMinutes": {
+      "type": "int",
+      "default": 240
+    },
+    "p2FirstResponseMinutes": {
+      "type": "int",
+      "default": 60
+    },
+    "p2ResolveMinutes": {
+      "type": "int",
+      "default": 1440
+    },
+    "p3FirstResponseMinutes": {
+      "type": "int",
+      "default": 240
+    },
+    "p3ResolveMinutes": {
+      "type": "int",
+      "default": 4320
+    },
+    "maxOpenTicketsPerUser": {
+      "type": "int",
+      "default": 10,
+      "min": 1.0,
+      "max": 100.0
+    },
+    "maxAttachmentsPerMessage": {
+      "type": "int",
+      "default": 3,
+      "min": 1.0,
+      "max": 10.0
+    },
+    "autoCloseResolvedDays": {
+      "type": "int",
+      "default": 7,
+      "min": 1.0,
+      "max": 90.0
+    },
+    "attachmentRetentionDays": {
+      "type": "int",
+      "default": 30,
+      "min": 1.0,
+      "max": 90.0
+    }
+  },
+  "MonitoringSettings": {
+    "probeFailureThreshold": {
+      "type": "int",
+      "default": 3,
+      "min": 1.0,
+      "max": 60.0
+    },
+    "probeRecoveryThreshold": {
+      "type": "int",
+      "default": 3,
+      "min": 1.0,
+      "max": 60.0
+    },
+    "errorCountThreshold": {
+      "type": "int",
+      "default": 10,
+      "min": 1.0,
+      "max": 10000.0
+    },
+    "errorWindowMinutes": {
+      "type": "int",
+      "default": 5,
+      "min": 1.0,
+      "max": 1440.0
+    },
+    "errorQuietMinutes": {
+      "type": "int",
+      "default": 30,
+      "min": 1.0,
+      "max": 1440.0
+    },
+    "providerFailureThreshold": {
+      "type": "int",
+      "default": 3,
+      "min": 1.0,
+      "max": 1000.0
+    },
+    "reminderMinutes": {
+      "type": "int",
+      "default": 15,
+      "min": 1.0,
+      "max": 1440.0
+    },
+    "errorRetentionDays": {
+      "type": "int",
+      "default": 30,
+      "min": 1.0,
+      "max": 365.0
+    }
+  },
+  "MarketCostType": {
+    "key": {
+      "type": "string"
+    },
+    "label": {
+      "type": "string"
+    },
+    "aiDescription": {
+      "type": "string"
+    },
+    "newsKeywords": {
+      "type": "IReadOnlyList<string>",
+      "default": []
+    },
+    "transactionKeywords": {
+      "type": "IReadOnlyList<string>",
+      "default": []
+    },
+    "transactionExcludes": {
+      "type": "IReadOnlyList<string>",
+      "default": []
+    },
+    "categorySlugs": {
+      "type": "IReadOnlyList<string>",
+      "default": []
+    },
+    "hasPriceTable": {
+      "type": "bool"
+    },
+    "enabled": {
+      "type": "bool",
+      "default": true
+    }
+  },
+  "MarketDataSettings": {
+    "minAgreeingSources": {
+      "type": "int",
+      "default": 2,
+      "min": 1.0,
+      "max": 10.0
+    },
+    "maxDocumentsPerRun": {
+      "type": "int",
+      "default": 20,
+      "min": 1.0,
+      "max": 200.0
+    },
+    "minPriceCents": {
+      "type": "long",
+      "default": 10000
+    },
+    "maxPriceCents": {
+      "type": "long",
+      "default": 60000
+    },
+    "maxChangePercent": {
+      "type": "int",
+      "default": 20,
+      "min": 1.0,
+      "max": 100.0
+    },
+    "minEventDomains": {
+      "type": "int",
+      "default": 2,
+      "min": 1.0,
+      "max": 10.0
+    },
+    "autoPublishNewsEvents": {
+      "type": "bool"
+    },
+    "maxAiDocumentsPerDay": {
+      "type": "int",
+      "default": 100,
+      "min": 0.0,
+      "max": 5000.0
+    },
+    "referenceFuelKey": {
+      "type": "string",
+      "default": "e10_ron95_3"
+    },
+    "riseThresholdPercent": {
+      "type": "int",
+      "default": 3,
+      "min": 1.0,
+      "max": 100.0
+    },
+    "compareWindowDays": {
+      "type": "int",
+      "default": 14,
+      "min": 1.0,
+      "max": 90.0
+    },
+    "alertCooldownDays": {
+      "type": "int",
+      "default": 14,
+      "min": 0.0,
+      "max": 365.0
+    },
+    "spendLookbackDays": {
+      "type": "int",
+      "default": 60,
+      "min": 7.0,
+      "max": 365.0
+    },
+    "minCategoryTransactions": {
+      "type": "int",
+      "default": 2,
+      "min": 1.0,
+      "max": 100.0
+    },
+    "lastSpendMaxDays": {
+      "type": "int",
+      "default": 45,
+      "min": 1.0,
+      "max": 365.0
+    },
+    "minSpendSharePercent": {
+      "type": "int",
+      "default": 2,
+      "min": 0.0,
+      "max": 100.0
+    },
+    "minExtraCostCents": {
+      "type": "long",
+      "default": 5000
+    },
+    "costTypes": {
+      "type": "IReadOnlyList<MarketCostType>"
+    }
+  },
+  "LimitSettings": {
+    "alertT1Percent": {
+      "type": "int",
+      "default": 70,
+      "min": 1.0,
+      "max": 98.0
+    },
+    "alertT2Percent": {
+      "type": "int",
+      "default": 90,
+      "min": 2.0,
+      "max": 99.0
+    }
+  },
+  "SyncSettings": {
+    "intervalMinutes": {
+      "type": "int",
+      "default": 15,
+      "min": 5.0,
+      "max": 1440.0
+    },
+    "maxRetries": {
+      "type": "int",
+      "default": 5,
+      "min": 0.0,
+      "max": 20.0
+    },
+    "queueRetentionDays": {
+      "type": "int",
+      "default": 7,
+      "min": 1.0,
+      "max": 90.0
+    }
+  },
+  "ThemeSettings": {
+    "primaryColor": {
+      "type": "string?"
+    },
+    "backgroundColor": {
+      "type": "string?"
+    },
+    "navBarColor": {
+      "type": "string?"
+    },
+    "fontFamily": {
+      "type": "string?"
+    },
+    "textScale": {
+      "type": "double",
+      "default": 1.0,
+      "min": 0.8,
+      "max": 1.5
+    },
+    "logoUrl": {
+      "type": "string?"
+    }
+  },
+  "QrTransferSettings": {
+    "matchWindowMinutes": {
+      "type": "int",
+      "default": 30,
+      "min": 5.0,
+      "max": 180.0
+    },
+    "clockSkewMinutes": {
+      "type": "int",
+      "default": 2,
+      "min": 0.0,
+      "max": 10.0
+    },
+    "pendingLifetimeHours": {
+      "type": "int",
+      "default": 24,
+      "min": 1.0,
+      "max": 168.0
+    },
+    "maxAmount": {
+      "type": "long",
+      "default": 100000000000,
+      "min": 1000.0,
+      "max": 1000000000000.0
+    },
+    "maxMessageLength": {
+      "type": "int",
+      "default": 100,
+      "min": 20.0,
+      "max": 100.0
+    },
+    "defaultMessage": {
+      "type": "string",
+      "default": "Chuyen tien qua FinMate"
+    },
+    "deeplinkHost": {
+      "type": "string",
+      "default": "dl.vietqr.io"
+    },
+    "deeplinkReturnUrl": {
+      "type": "string",
+      "default": "https://www.vietqr.io/deeplink"
+    }
+  },
+  "NotificationPipelineSettings": {
+    "businessDuplicateWindowMinutes": {
+      "type": "int",
+      "default": 5,
+      "min": 1.0,
+      "max": 60.0
+    },
+    "selfTransferMergeWindowMinutes": {
+      "type": "int",
+      "default": 10,
+      "min": 1.0,
+      "max": 60.0
+    }
+  },
+  "FinanceMethodSettings": {
+    "recommendationReuseMinutes": {
+      "type": "int",
+      "default": 10,
+      "min": 0.0,
+      "max": 1440.0
+    },
+    "supportMinSharePercent": {
+      "type": "int",
+      "default": 50,
+      "min": 1.0,
+      "max": 100.0
+    }
+  },
+  "ForecastHoliday": {
+    "name": {
+      "type": "string"
+    },
+    "start": {
+      "type": "DateOnly"
+    },
+    "end": {
+      "type": "DateOnly"
+    },
+    "multiplierPercent": {
+      "type": "int",
+      "default": 100
+    }
+  },
+  "ForecastSettings": {
+    "historyWindowDays": {
+      "type": "int",
+      "default": 90,
+      "min": 30.0,
+      "max": 365.0
+    },
+    "minHistoryDays": {
+      "type": "int",
+      "default": 30
+    },
+    "reservePercentOfIncome": {
+      "type": "int",
+      "default": 5,
+      "min": 0.0,
+      "max": 50.0
+    },
+    "maxHorizonDays": {
+      "type": "int",
+      "default": 90,
+      "min": 7.0,
+      "max": 365.0
+    },
+    "amountTolerancePercent": {
+      "type": "int",
+      "default": 10,
+      "min": 0.0,
+      "max": 50.0
+    },
+    "monthlyMinIntervalDays": {
+      "type": "int",
+      "default": 25
+    },
+    "monthlyMaxIntervalDays": {
+      "type": "int",
+      "default": 35
+    },
+    "weeklyMinIntervalDays": {
+      "type": "int",
+      "default": 6
+    },
+    "weeklyMaxIntervalDays": {
+      "type": "int",
+      "default": 8
+    },
+    "suggestMinOccurrences": {
+      "type": "int",
+      "default": 2
+    },
+    "autoActivateOccurrences": {
+      "type": "int",
+      "default": 3
+    },
+    "overdueGraceDays": {
+      "type": "int",
+      "default": 7,
+      "min": 0.0,
+      "max": 31.0
+    },
+    "maxScenarioItems": {
+      "type": "int",
+      "default": 20,
+      "min": 1.0,
+      "max": 50.0
+    },
+    "purchaseDefaultHorizonDays": {
+      "type": "int",
+      "default": 14,
+      "min": 1.0,
+      "max": 90.0
+    },
+    "purchaseStaleBalanceDays": {
+      "type": "int",
+      "default": 7,
+      "min": 1.0,
+      "max": 60.0
+    },
+    "holidays": {
+      "type": "IReadOnlyList<ForecastHoliday>",
+      "default": []
+    },
+    "lowBalanceHorizonDays": {
+      "type": "int",
+      "default": 14,
+      "min": 3.0,
+      "max": 60.0
+    },
+    "lowBalanceCooldownDays": {
+      "type": "int",
+      "default": 3,
+      "min": 1.0,
+      "max": 30.0
+    },
+    "inaccurateSuppressDays": {
+      "type": "int",
+      "default": 7,
+      "min": 1.0,
+      "max": 60.0
+    },
+    "budgetRiskMinElapsedDays": {
+      "type": "int",
+      "default": 7,
+      "min": 1.0,
+      "max": 28.0
+    },
+    "budgetRiskMinDaysRemaining": {
+      "type": "int",
+      "default": 3,
+      "min": 1.0,
+      "max": 28.0
+    },
+    "billReminderDaysBefore": {
+      "type": "int",
+      "default": 3,
+      "min": 0.0,
+      "max": 14.0
+    },
+    "incomeLateDays": {
+      "type": "int",
+      "default": 3,
+      "min": 1.0,
+      "max": 15.0
+    },
+    "irregularIncomeMonths": {
+      "type": "int",
+      "default": 6,
+      "min": 2.0,
+      "max": 12.0
+    },
+    "quietHoursStartMinute": {
+      "type": "int",
+      "min": 0.0,
+      "max": 1439.0
+    },
+    "quietHoursEndMinute": {
+      "type": "int",
+      "min": 0.0,
+      "max": 1439.0
+    },
+    "anomalyLookbackDays": {
+      "type": "int",
+      "default": 90,
+      "min": 30.0,
+      "max": 365.0
+    },
+    "anomalyMinCategorySamples": {
+      "type": "int",
+      "default": 5,
+      "min": 3.0,
+      "max": 50.0
+    },
+    "anomalyMinMerchantSamples": {
+      "type": "int",
+      "default": 3,
+      "min": 2.0,
+      "max": 50.0
+    },
+    "anomalyRatioPercent": {
+      "type": "int",
+      "default": 300
+    },
+    "anomalyHighRatioPercent": {
+      "type": "int",
+      "default": 500
+    },
+    "anomalyMinAmountCents": {
+      "type": "long",
+      "default": 200000,
+      "min": 0.0,
+      "max": 100000000.0
+    },
+    "duplicateWindowMinutes": {
+      "type": "int",
+      "default": 10,
+      "min": 1.0,
+      "max": 120.0
+    },
+    "normalFeedbackTolerancePercent": {
+      "type": "int",
+      "default": 125,
+      "min": 100.0,
+      "max": 300.0
+    },
+    "anomalyScanDays": {
+      "type": "int",
+      "default": 3,
+      "min": 1.0,
+      "max": 14.0
+    },
+    "categoryForecastMonths": {
+      "type": "int",
+      "default": 3
+    },
+    "categoryForecastMinMonths": {
+      "type": "int",
+      "default": 2
+    },
+    "categoryChangePercent": {
+      "type": "int",
+      "default": 20,
+      "min": 1.0,
+      "max": 100.0
+    },
+    "budgetSuggestionRoundingCents": {
+      "type": "long",
+      "default": 10000,
+      "min": 1.0,
+      "max": 1000000.0
+    },
+    "goalRateMonths": {
+      "type": "int",
+      "default": 6,
+      "min": 1.0,
+      "max": 24.0
+    },
+    "goodCoveragePercent": {
+      "type": "int",
+      "default": 85
+    },
+    "minCoveragePercent": {
+      "type": "int",
+      "default": 60
+    }
+  },
+  "EconomicFeedsSettings": {
+    "enabled": {
+      "type": "bool",
+      "default": true
+    },
+    "scheduleDayOfMonth": {
+      "type": "int",
+      "default": 6,
+      "min": 1.0,
+      "max": 28.0
+    },
+    "scheduleHour": {
+      "type": "int",
+      "default": 9,
+      "min": 0.0,
+      "max": 23.0
+    },
+    "cpiIndexUrl": {
+      "type": "string"
+    },
+    "autoApproveMaxDeltaBps": {
+      "type": "int",
+      "default": 100,
+      "min": 0.0,
+      "max": 10000.0
+    },
+    "minRateBps": {
+      "type": "int",
+      "default": -2000,
+      "min": -10000.0,
+      "max": 100000.0
+    },
+    "maxRateBps": {
+      "type": "int",
+      "default": 5000
+    }
+  },
+  "AgentSettings": {
+    "budgetTemplate": {
+      "type": "string"
+    }
+  },
+  "CategorySettings": {
+    "palette": {
+      "type": "IReadOnlyList<CategoryColor>"
+    }
+  },
+  "AssistantSettings": {
+    "maxSuggestions": {
+      "type": "int",
+      "default": 4,
+      "min": 0.0,
+      "max": 10.0
+    },
+    "suggestions": {
+      "type": "IReadOnlyList<AssistantSuggestion>"
+    },
+    "categorySourceConfidence": {
+      "type": "IReadOnlyDictionary<string, double>"
+    }
+  },
+  "RefundSettings": {
+    "matchWindowDays": {
+      "type": "int",
+      "default": 60,
+      "min": 1.0,
+      "max": 365.0
+    },
+    "reversalMatchWindowDays": {
+      "type": "int",
+      "default": 3,
+      "min": 1.0,
+      "max": 60.0
+    },
+    "maxSuggestions": {
+      "type": "int",
+      "default": 3,
+      "min": 1.0,
+      "max": 10.0
+    }
+  },
+  "DuplicateSettings": {
+    "notificationWindowMinutes": {
+      "type": "int",
+      "default": 10,
+      "min": 1.0,
+      "max": 60.0
+    },
+    "manualWindowHours": {
+      "type": "int",
+      "default": 48,
+      "min": 1.0,
+      "max": 168.0
+    },
+    "receiptWindowHours": {
+      "type": "int",
+      "default": 12,
+      "min": 1.0,
+      "max": 72.0
+    }
+  },
+  "TransferSettings": {
+    "pairWindowMinutes": {
+      "type": "int",
+      "default": 30,
+      "min": 1.0,
+      "max": 240.0
+    },
+    "clockSkewMinutes": {
+      "type": "int",
+      "default": 2,
+      "min": 0.0,
+      "max": 10.0
+    },
+    "maxFeeCents": {
+      "type": "long",
+      "default": 20000,
+      "min": 0.0,
+      "max": 200000.0
+    },
+    "maxFeePercent": {
+      "type": "int",
+      "default": 2,
+      "min": 0.0,
+      "max": 10.0
+    },
+    "providerAliases": {
+      "type": "IReadOnlyDictionary<string, string[]>"
+    }
+  },
+  "SnapshotSettings": {
+    "retentionDays": {
+      "type": "int",
+      "default": 365,
+      "min": 30.0,
+      "max": 3650.0
+    }
+  },
+  "ListenerHealthSettings": {
+    "historyRetentionDays": {
+      "type": "int",
+      "default": 90,
+      "min": 7.0,
+      "max": 365.0
+    },
+    "historyDays": {
+      "type": "int",
+      "default": 30,
+      "min": 7.0,
+      "max": 90.0
+    },
+    "minNotificationsForBaseline": {
+      "type": "int",
+      "default": 8,
+      "min": 2.0,
+      "max": 1000.0
+    },
+    "minSilenceHours": {
+      "type": "int",
+      "default": 48,
+      "min": 1.0,
+      "max": 720.0
+    },
+    "silenceMultiplier": {
+      "type": "double",
+      "default": 3,
+      "min": 1.0,
+      "max": 20.0
+    },
+    "staleReportHours": {
+      "type": "int",
+      "default": 72,
+      "min": 12.0,
+      "max": 720.0
+    },
+    "coverageInheritHours": {
+      "type": "int",
+      "default": 36,
+      "min": 12.0,
+      "max": 72.0
+    },
+    "cooldownDays": {
+      "type": "int",
+      "default": 3,
+      "min": 1.0,
+      "max": 30.0
+    },
+    "maxRemindersPerEpisode": {
+      "type": "int",
+      "default": 3,
+      "min": 1.0,
+      "max": 10.0
+    },
+    "maxDevicesPerUser": {
+      "type": "int",
+      "default": 10,
+      "min": 1.0,
+      "max": 50.0
+    },
+    "formatDriftRatio": {
+      "type": "double",
+      "default": 3,
+      "min": 1.1,
+      "max": 100.0
+    },
+    "formatDriftMinSamples": {
+      "type": "int",
+      "default": 20,
+      "min": 1.0,
+      "max": 10000.0
+    },
+    "formatDriftMinRatePercent": {
+      "type": "int",
+      "default": 10,
+      "min": 0.0,
+      "max": 100.0
+    },
+    "formatDriftBaselineFloorPercent": {
+      "type": "int",
+      "default": 1,
+      "min": 0.0,
+      "max": 100.0
+    },
+    "formatDriftRecoveryRuns": {
+      "type": "int",
+      "default": 24,
+      "min": 1.0,
+      "max": 168.0
+    },
+    "formatFinancialShareDropRatio": {
+      "type": "double",
+      "default": 0.33,
+      "min": 0.01,
+      "max": 1.0
+    }
+  },
+  "SystemConfigDocument": {
+    "maintenance": {
+      "type": "MaintenanceSettings"
+    },
+    "appVersion": {
+      "type": "AppVersionSettings"
+    },
+    "features": {
+      "type": "FeatureSettings"
+    },
+    "limits": {
+      "type": "LimitSettings"
+    },
+    "sync": {
+      "type": "SyncSettings"
+    },
+    "theme": {
+      "type": "ThemeSettings"
+    },
+    "qrTransfer": {
+      "type": "QrTransferSettings"
+    },
+    "notificationPipeline": {
+      "type": "NotificationPipelineSettings"
+    },
+    "financeMethods": {
+      "type": "FinanceMethodSettings"
+    },
+    "forecast": {
+      "type": "ForecastSettings"
+    },
+    "groups": {
+      "type": "GroupSettings"
+    },
+    "support": {
+      "type": "SupportSettings"
+    },
+    "monitoring": {
+      "type": "MonitoringSettings"
+    },
+    "agent": {
+      "type": "AgentSettings"
+    },
+    "economicFeeds": {
+      "type": "EconomicFeedsSettings"
+    },
+    "marketData": {
+      "type": "MarketDataSettings"
+    },
+    "community": {
+      "type": "CommunitySettings"
+    },
+    "categories": {
+      "type": "CategorySettings"
+    },
+    "assistant": {
+      "type": "AssistantSettings"
+    },
+    "refunds": {
+      "type": "RefundSettings"
+    },
+    "duplicates": {
+      "type": "DuplicateSettings"
+    },
+    "transfers": {
+      "type": "TransferSettings"
+    },
+    "snapshots": {
+      "type": "SnapshotSettings"
+    },
+    "listenerHealth": {
+      "type": "ListenerHealthSettings"
+    }
+  },
+  "CategoryColor": {
+    "key": {
+      "type": "string"
+    },
+    "hex": {
+      "type": "string",
+      "default": "#087F73"
+    },
+    "name": {
+      "type": "string"
+    }
+  },
+  "AssistantSuggestion": {
+    "key": {
+      "type": "string"
+    },
+    "text": {
+      "type": "string"
+    },
+    "when": {
+      "type": "string",
+      "default": "always"
+    }
+  },
+  "CommunitySettings": {
+    "topics": {
+      "type": "IReadOnlyList<CommunityTopic>"
+    },
+    "regions": {
+      "type": "IReadOnlyList<CommunityProvince>"
+    },
+    "foodKeywords": {
+      "type": "IReadOnlyList<string>"
+    },
+    "foodExcludes": {
+      "type": "IReadOnlyList<string>"
+    },
+    "bannedWords": {
+      "type": "IReadOnlyList<string>"
+    },
+    "maxPostsPerDay": {
+      "type": "int",
+      "min": 1,
+      "max": 100
+    },
+    "maxCommentsPerDay": {
+      "type": "int",
+      "min": 1,
+      "max": 500
+    },
+    "maxImagesPerDay": {
+      "type": "int",
+      "min": 1,
+      "max": 100
+    },
+    "maxPendingImages": {
+      "type": "int",
+      "min": 1,
+      "max": 100000
+    },
+    "maxVotesPerHour": {
+      "type": "int",
+      "min": 1,
+      "max": 1000
+    },
+    "maxReportsPerDay": {
+      "type": "int",
+      "min": 1,
+      "max": 500
+    },
+    "autoHideReportCount": {
+      "type": "int",
+      "min": 2,
+      "max": 100
+    },
+    "promptMaxAmountCents": {
+      "type": "long",
+      "min": 1,
+      "max": 100000000
+    },
+    "promptPerPlaceCooldownDays": {
+      "type": "int",
+      "min": 1,
+      "max": 365
+    },
+    "verifiedLookbackDays": {
+      "type": "int",
+      "min": 1,
+      "max": 365
+    }
+  },
+  "CommunityTopic": {
+    "code": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "requiresPlace": {
+      "type": "bool"
+    },
+    "tags": {
+      "type": "IReadOnlyList<string>"
+    }
+  },
+  "CommunityArea": {
+    "code": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    }
+  },
+  "CommunityProvince": {
+    "code": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "areas": {
+      "type": "IReadOnlyList<CommunityArea>"
+    }
+  }
+}

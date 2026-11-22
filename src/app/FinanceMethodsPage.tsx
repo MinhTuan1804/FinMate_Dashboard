@@ -1,3 +1,4 @@
+import { useUrlState } from './ui/useUrlState';
 import { useState } from 'react';
 import { CatalogPage } from './CorePages';
 import { HomeLayoutEditor } from './HomeLayoutEditor';
@@ -6,7 +7,7 @@ import { PageHeader } from './Shared';
 
 /** Phương pháp tài chính: danh mục (bảng chung) cộng bố cục trang chủ từng cách và chỉ dẫn AI khi gợi ý. */
 export function FinanceMethodsPage() {
-  const [tab, setTab] = useState<'methods' | 'prompts'>('methods');
+  const [tab, setTab] = useUrlState('tab','methods');
   const [editing, setEditing] = useState<Record<string, unknown> | null>(null);
   const [reload, setReload] = useState(0);
   const [notice, setNotice] = useState('');
@@ -31,7 +32,7 @@ export function FinanceMethodsPage() {
         <HomeLayoutEditor
           method={editing}
           onClose={() => setEditing(null)}
-          onSaved={() => { setEditing(null); setReload(n => n + 1); setNotice(`Đã lưu bố cục trang chủ của "${String(editing.name)}". App áp dụng ở lần mở trang chủ kế tiếp.`); }}
+          onSaved={() => { setEditing(null); setReload(n => n + 1); setNotice(`Đã lưu bố cục trang chủ của "${String(editing.name)}". Ứng dụng áp dụng ở lần mở trang chủ kế tiếp.`); }}
         />
       )}
     </>
