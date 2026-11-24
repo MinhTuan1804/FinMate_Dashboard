@@ -10,6 +10,7 @@ import './app/design-tokens.css';
 import './app/app.css';
 import './app/ui.css';
 import './app/finmate-theme.css';
+import './app/settings-layout.css';
 
 document.documentElement.classList.toggle('dark', localStorage.getItem('theme') === 'dark');
 

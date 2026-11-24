@@ -1,0 +1,134 @@
+/* Cấu hình: bố cục phẳng. Vùng chia bằng đường kẻ mảnh, không còn hộp lồng hộp.
+   Dùng cho Cấu hình hệ thống, Tích hợp bên thứ ba và Từ điển AI. */
+
+/* ---------- Cấu hình hệ thống: nhãn bên trái, điều khiển bên phải ---------- */
+.fm-sheet { display: block; margin-bottom: 8px; }
+.fm-sheet > .fm-card {
+  display: grid; grid-template-columns: minmax(220px, 300px) minmax(0, 1fr); column-gap: 56px; align-items: start;
+  margin: 0; padding: 28px 4px; background: none; border: 0; border-top: 1px solid var(--border); border-radius: 0; box-shadow: none;
+}
+.fm-sheet > .fm-card:first-child { border-top: 0; padding-top: 12px; }
+.fm-sheet > .fm-card > h2 { grid-column: 1; grid-row: 1; margin: 0; font-size: 15px; font-weight: 650; line-height: 1.4; }
+.fm-sheet > .fm-card > .fm-hint { grid-column: 1; grid-row: 2 / span 12; margin: 8px 0 0; font-size: 12px; line-height: 1.7; color: var(--muted); }
+.fm-sheet > .fm-card > :not(h2):not(.fm-hint) { grid-column: 2; }
+.fm-sheet .fm-field { grid-template-columns: minmax(0, 1fr) minmax(150px, 280px); align-items: center; gap: 20px; padding: 14px 0; border-top: 1px solid var(--border); font-size: 13px; }
+.fm-sheet .fm-field:first-of-type, .fm-sheet > .fm-card > .fm-field:first-child { border-top: 0; padding-top: 0; }
+.fm-sheet .fm-field--inline { grid-template-columns: minmax(0, 1fr) 120px; }
+.fm-sheet .fm-field textarea { grid-column: 2; }
+.fm-sheet .fm-switch-row { grid-template-columns: minmax(0, 1fr) auto; padding: 14px 0; }
+.fm-sheet .fm-switch-row input[type="checkbox"] { order: 2; }
+.fm-sheet .fm-switch-row small { display: block; margin-top: 2px; color: var(--muted); font-size: 12px; line-height: 1.6; }
+
+/* ---------- Tích hợp bên thứ ba: mỗi kết nối là một dòng ---------- */
+.fm-sheet--rows > .fm-card {
+  grid-template-columns: minmax(220px, 1.3fr) minmax(0, 1fr) auto; column-gap: 28px; row-gap: 10px; align-items: center; padding: 18px 4px;
+}
+.fm-sheet.fm-sheet--rows > .fm-card > :not(h2):not(.fm-hint) { grid-column: auto; grid-row: auto; }
+.fm-sheet--rows > .fm-card > .fm-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; padding: 0; border: 0; background: none; }
+.fm-sheet--rows > .fm-card > .fm-toolbar h2 { margin: 0; font-size: 14px; font-weight: 600; }
+.fm-sheet--rows > .fm-card > .fm-kv { margin: 0; grid-template-columns: auto minmax(0, 1fr); gap: 0 14px; }
+.fm-sheet--rows > .fm-card > .fm-kv dt, .fm-sheet--rows > .fm-card > .fm-kv dd { padding: 2px 0; border: 0; font-size: 12px; }
+.fm-sheet--rows > .fm-card > .fm-actions { flex-wrap: nowrap; justify-content: flex-end; }
+.fm-sheet--rows > .fm-card > .fm-success, .fm-sheet--rows > .fm-card > .error-box { grid-column: 1 / -1; margin: 0; }
+
+/* ---------- Từ điển AI: danh sách tài liệu bên trái, trình soạn bên phải ---------- */
+.ai-editor-grid { grid-template-columns: minmax(220px, 260px) minmax(0, 1fr); gap: 0; align-items: start; border-top: 1px solid var(--border); }
+.ai-editor-grid > .fm-card { margin: 0; background: none; border: 0; border-radius: 0; box-shadow: none; }
+.ai-doc-list { padding: 18px 20px 18px 0 !important; border-right: 1px solid var(--border) !important; }
+.ai-doc-list h3 { margin: 0 0 10px !important; font-size: 12px; font-weight: 600; color: var(--muted); }
+.ai-doc-list .fm-list-button { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; padding: 10px 12px; margin: 0 0 2px; border: 0; border-left: 2px solid transparent; border-radius: 0 10px 10px 0; font-size: 13px; line-height: 1.5; }
+.ai-doc-list .fm-list-button small { flex: none; color: var(--muted); font-variant-numeric: tabular-nums; }
+.ai-doc-list .fm-list-button.fm-selected { background: var(--accent-soft); border-left-color: var(--accent); color: var(--text); font-weight: 600; }
+.ai-editor { padding: 18px 0 18px 32px !important; }
+.ai-editor > h3:first-of-type { margin: 0 0 14px; font-size: 17px; }
+.ai-editor h3 { padding-top: 0; border-top: 0 !important; }
+.ai-editor .version-strip { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 22px; padding: 0 0 16px; border-bottom: 1px solid var(--border); }
+.ai-editor .version-strip p { margin: 0; }
+.ai-editor .technical-details { margin: 20px 0; padding: 0; background: none; border: 0; border-top: 1px solid var(--border); border-radius: 0; }
+.ai-editor .technical-details > summary { padding: 14px 0; cursor: pointer; }
+@media (max-width: 900px) {
+  .fm-sheet > .fm-card, .fm-sheet--rows > .fm-card { grid-template-columns: minmax(0, 1fr); row-gap: 12px; }
+  .fm-sheet > .fm-card > h2, .fm-sheet > .fm-card > .fm-hint, .fm-sheet > .fm-card > :not(h2):not(.fm-hint) { grid-column: 1; grid-row: auto; }
+  .fm-sheet--rows > .fm-card > .fm-actions { justify-content: flex-start; flex-wrap: wrap; }
+  .ai-editor-grid { grid-template-columns: minmax(0, 1fr); }
+  .ai-doc-list { border-right: 0 !important; border-bottom: 1px solid var(--border) !important; padding: 14px 0 !important; }
+  .ai-editor { padding: 18px 0 !important; }
+}
+.fm-sheet--rows > .fm-card:has(> .fm-toolbar:first-child) { padding: 18px 4px; overflow: visible; }
+.fm-sheet--rows > .fm-card:has(> .fm-toolbar:first-child) > .fm-toolbar { padding: 0; border: 0; margin: 0; }
+.fm-sheet--rows > .fm-card:has(> .fm-toolbar:first-child) > :not(.fm-toolbar) { margin-left: 0; margin-right: 0; }
+.fm-sheet--rows > .fm-card > .fm-kv, .fm-sheet--rows > .fm-card > .fm-actions { margin-top: 0; margin-bottom: 0; }
+.ai-editor .version-strip { background: none; border-radius: 0; border-top: 0; border-left: 0; border-right: 0; padding-left: 0; padding-right: 0; }
+/* Kết quả thử kết nối: một dòng riêng dưới hàng, không chen vào các cột */
+.fm-sheet.fm-sheet--rows > .fm-card.fm-card > .fm-toolbar { grid-column: 1; grid-row: 1; }
+.fm-sheet.fm-sheet--rows > .fm-card.fm-card > .fm-kv { grid-column: 2; grid-row: 1; }
+.fm-sheet.fm-sheet--rows > .fm-card.fm-card > .fm-actions { grid-column: 3; grid-row: 1; }
+.fm-sheet.fm-sheet--rows > .fm-card.fm-card > .fm-success, .fm-sheet.fm-sheet--rows > .fm-card.fm-card > .error-box { grid-column: 1 / -1; grid-row: 2; width: fit-content; max-width: 100%; margin: 0; padding: 8px 14px; border-radius: 12px; font-size: 12px; }
+@media (max-width: 900px) {
+  .fm-sheet.fm-sheet--rows > .fm-card.fm-card { grid-template-columns: minmax(0, 1fr); }
+  .fm-sheet.fm-sheet--rows > .fm-card.fm-card > .fm-toolbar, .fm-sheet.fm-sheet--rows > .fm-card.fm-card > .fm-kv, .fm-sheet.fm-sheet--rows > .fm-card.fm-card > .fm-actions,
+  .fm-sheet.fm-sheet--rows > .fm-card.fm-card > .fm-success, .fm-sheet.fm-sheet--rows > .fm-card.fm-card > .error-box { grid-column: 1; grid-row: auto; }
+}
+/* Cột giữa theo nội dung (không bị ép khi hàng có 3 nút); giá trị không xuống dòng từng ký tự */
+@media (min-width: 901px) {
+  .fm-sheet.fm-sheet--rows > .fm-card.fm-card { grid-template-columns: minmax(180px, 1fr) max-content max-content; }
+  .fm-sheet--rows > .fm-card > .fm-kv dt, .fm-sheet--rows > .fm-card > .fm-kv dd { white-space: nowrap; }
+}
+@media (min-width: 901px) {
+  .fm-sheet.fm-sheet--rows > .fm-card.fm-card { grid-template-columns: minmax(160px, 1fr) max-content minmax(0, max-content); }
+  .fm-sheet--rows > .fm-card > .fm-actions { flex-wrap: wrap; max-width: 330px; }
+}
+@media (min-width: 901px) { .fm-sheet--rows > .fm-card > .fm-actions { max-width: 430px; } }
+/* Key cùng nhà cung cấp: một tiêu đề chung, các key là dòng con thụt vào có vạch dọc */
+.fm-keyblock, .fm-keygroup { border-top: 1px solid var(--border); }
+.fm-keyblock:first-of-type, .fm-keygroup:first-of-type { border-top: 0; }
+.fm-keygroup { padding: 16px 0 6px; }
+.fm-keygroup > h3 { margin: 0 4px 4px; font-size: 14px; font-weight: 650; }
+.fm-keygroup > .fm-sheet { margin: 0 0 0 4px; padding-left: 18px; border-left: 2px solid var(--border); }
+.fm-keygroup > .fm-sheet > .fm-card { padding-top: 14px; padding-bottom: 14px; }
+.fm-keygroup > .fm-sheet > .fm-card:first-child { border-top: 0; }
+.fm-sheet .fm-logo-field { grid-template-columns: minmax(0, 1fr) auto; }
+.fm-sheet .fm-logo-field .fm-actions { justify-content: flex-end; }
+.fm-sheet .fm-logo-preview { grid-column: 2; max-width: 160px; max-height: 80px; margin-top: 12px; object-fit: contain; justify-self: end; }
+/* Nhật ký: tên người thực hiện, dưới là vai trò và email */
+.audit-actor { display: inline-grid; gap: 2px; line-height: 1.4; }
+.audit-actor small { color: var(--muted); font-size: 11px; }
+/* Dòng "Cập nhật … / Làm mới": chữ và nút cùng hàng giữa */
+.fm-refresh-line { align-items: center; }
+.fm-refresh-line > .fm-hint { margin: 0; }
+/* Nhật ký vận hành có 4 ô lọc: đủ chỗ thì cả 4 ô và nút nằm một hàng */
+@media (min-width: 1200px) { .fm-audit-filters.fm-audit-filters--four { grid-template-columns: repeat(4, minmax(0, 1fr)) auto; } }
+/* Thẻ có thanh công cụ ở đầu thì con có lề trái/phải 20px; nút danh sách rộng 100% cộng lề sẽ tràn khỏi thẻ. */
+.fm-card:has(> .fm-toolbar:first-child) > .fm-list-button { width: auto; }
+/* Thanh lọc: ô chữ và ô chọn cùng chiều cao, để nhãn phía trên thẳng hàng */
+.fm-filter-bar :is(input:not([type="checkbox"]):not([type="radio"]), select) { height: 44px; box-sizing: border-box; }
+/* Chọn font: danh sách thả xuống, ô xem trước ngay bên dưới viết bằng font đang chọn */
+.fm-font-preview { display: grid; gap: 6px; margin-top: 14px; padding: 18px 20px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); color: var(--text); }
+.fm-font-preview small { font-family: 'Be Vietnam Pro', sans-serif; font-size: 11px; color: var(--muted); }
+.fm-font-preview strong { font-size: 20px; font-weight: 600; line-height: 1.4; }
+.fm-font-preview p { margin: 0; font-size: 15px; line-height: 1.6; }
+.fm-font-preview__letters { color: var(--muted); letter-spacing: .02em; }
+/* Mỗi nhóm cấu hình: cột trái là tiêu đề + mô tả (luôn ngay dưới tiêu đề), cột phải là các ô nhập, dù cột phải cao bao nhiêu */
+.fm-sheet > .fm-card.fm-card > .fm-sheet__intro { grid-column: 1; grid-row: 1; }
+.fm-sheet > .fm-card.fm-card > .fm-sheet__body { grid-column: 2; grid-row: 1; min-width: 0; }
+.fm-sheet__intro h2 { margin: 0; font-size: 15px; font-weight: 650; line-height: 1.4; }
+.fm-sheet__intro .fm-hint { margin: 8px 0 0; font-size: 12px; line-height: 1.7; color: var(--muted); }
+.fm-sheet__body > .fm-logo-preview { display: block; margin: 12px 0 0 auto; }
+@media (max-width: 900px) { .fm-sheet > .fm-card.fm-card > .fm-sheet__intro, .fm-sheet > .fm-card.fm-card > .fm-sheet__body { grid-column: 1; grid-row: auto; } }
+/* Danh sách font trong cấu hình: mỗi font là một thẻ viết bằng chính font đó, có nút xóa; ô thêm font bên dưới */
+.fm-font-list { display: grid; gap: 10px; margin-top: 16px; }
+.fm-font-list__title { font-size: 12px; font-weight: 600; color: var(--muted); }
+.fm-font-list ul { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.fm-font-list li { display: inline-flex; align-items: center; gap: 6px; padding: 6px 6px 6px 12px; border: 1px solid var(--border); border-radius: 999px; background: var(--surface); font-size: 13px; }
+.fm-font-list li button { display: grid; place-items: center; width: 24px; height: 24px; border: 0; border-radius: 50%; background: transparent; color: var(--muted); font-size: 16px; line-height: 1; cursor: pointer; }
+.fm-font-list li button:hover { background: var(--danger-soft); color: var(--danger); }
+.fm-font-add { display: flex; gap: 8px; }
+.fm-font-add input { flex: 1; min-width: 0; }
+.fm-font-error { color: var(--danger); font-size: 12px; }
+/* Học AI: tổng quan và các cặp danh mục AI hay xếp sai */
+.learning-summary { display: grid; gap: 16px; margin-bottom: 20px; }
+.learning-summary .fm-stats { margin: 0; }
+.learning-pairs { margin: 0; }
+.learning-pairs ul { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 8px 24px; margin: 0; padding: 0; list-style: none; }
+.learning-pairs li { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.learning-pairs small { color: var(--muted); }

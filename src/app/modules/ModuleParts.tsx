@@ -21,7 +21,7 @@ export function ModuleTabs({ tabs }: { tabs: [string,string][] }) {
 export function FilterSelect({ label, value, onChange, options }: { label: string; value: string; onChange: (value:string)=>void; options: [string,string][] }) {
   return <label>{label}<select value={value} onChange={e=>onChange(e.target.value)}><option value="">Tất cả</option>{options.map(([key,text])=><option key={key} value={key}>{text}</option>)}</select></label>;
 }
-export function Refresh({ onClick, busy=false, updatedAt }: { onClick:()=>void; busy?:boolean; updatedAt?:number }) { return <span className="fm-actions">{Boolean(updatedAt)&&<small className="fm-hint">Cập nhật {fmtDate(updatedAt)}</small>}<button className="btn" disabled={busy} onClick={onClick}>{busy?'Đang tải…':'Làm mới'}</button></span>; }
+export function Refresh({ onClick, busy=false, updatedAt }: { onClick:()=>void; busy?:boolean; updatedAt?:number }) { return <span className="fm-actions fm-refresh-line">{Boolean(updatedAt)&&<small className="fm-hint">Cập nhật {fmtDate(updatedAt)}</small>}<button className="btn" disabled={busy} onClick={onClick}>{busy?'Đang tải…':'Làm mới'}</button></span>; }
 export function SafeLink({ href, children }: { href?:string|null; children:ReactNode }) {
   if(!href || !/^https?:\/\//i.test(href)) return <span>{children}</span>;
   return <a href={href} target="_blank" rel="noopener noreferrer">{children}</a>;

@@ -1,3 +1,4 @@
+import { isAdminRole } from '../../shared/permissions';
 import { serviceLabel } from '../../shared/presentation';
 import { useServerList } from '../ui/useServerList';
 import { ProviderDiagnostics, ErrorDiagnostics } from './MonitoringDiagnostics';
@@ -66,7 +67,7 @@ function OcrTab() {
 /** Giám sát hệ thống (OpsManager trở lên): trạng thái dịch vụ, sự cố và chất lượng OCR. */
 export function OpsMonitoringPage({ me }: { me: OpsMe }) {
   const [requested, setTab] = useUrlState('tab','status');
-  const tabs: [string, string][] = [['status', 'Dịch vụ'], ['incidents', 'Sự cố'], ['ocr', 'Đọc hóa đơn'],...(me.role==='Admin'?[['providers','Chất lượng thông báo'],['errors','Sự kiện lỗi']] as [string,string][]:[])];
+  const tabs: [string, string][] = [['status', 'Dịch vụ'], ['incidents', 'Sự cố'], ['ocr', 'Đọc hóa đơn'],...(isAdminRole(me.role)?[['providers','Chất lượng thông báo'],['errors','Sự kiện lỗi']] as [string,string][]:[])];
   const tab=tabs.some(([key])=>key===requested)?requested:'status';
   return <>
     <PageHeader title="Giám sát hệ thống" description="Hệ thống kiểm tra các dịch vụ mỗi phút và gom lỗi giống nhau thành một sự cố."/>

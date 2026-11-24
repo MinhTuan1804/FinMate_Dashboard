@@ -28,7 +28,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible { outline: non
 input:disabled, select:disabled { background: var(--surface-2); color: var(--muted); cursor: not-allowed; }
 input::placeholder { color: var(--muted); opacity: 0.8; }
 input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--primary); }
-label { display: grid; gap: 6px; font-size: 12px; font-weight: 600; color: var(--muted); }
+label { display: grid; align-content: start; gap: 6px; font-size: 12px; font-weight: 600; color: var(--muted); }
 label.fm-inline { display: flex; align-items: center; gap: 8px; white-space: nowrap; color: var(--text); font-weight: 500; font-size: 13px; }
 small { color: var(--muted); font-size: 12px; }
 .fm-error-text { color: var(--danger); font-weight: 500; }
@@ -137,6 +137,7 @@ small { color: var(--muted); font-size: 12px; }
 .fm-card:has(> .fm-filter-bar:first-child) > .fm-filter-bar { padding: 12px 20px; margin-bottom: 0; }
 .fm-filter-bar { gap: 10px 12px; align-items: flex-end; }
 .fm-filter-bar > label { flex: 0 1 180px; min-width: 140px; }
+.fm-filter-bar > label.fm-filter-datetime { flex: 0 1 240px; min-width: 230px; }
 .fm-filter-bar > label:first-child:has(input[type="search"]) { flex: 1 1 260px; max-width: 360px; }
 .fm-filter-bar > label.fm-inline { flex: 0 0 auto; min-width: 0; padding: 0 4px; }
 .fm-filter-bar > .btn--primary:last-child { margin-left: auto; }
@@ -172,7 +173,7 @@ small { color: var(--muted); font-size: 12px; }
 /* ---------- Table ---------- */
 .fm-table-wrap { overflow: auto; border: 1px solid var(--border); border-radius: var(--radius-sm); }
 .fm-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-.fm-table th { position: sticky; top: 0; padding: 10px 14px; text-align: left; white-space: nowrap; background: var(--surface-2); border-bottom: 1px solid var(--border); font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.fm-table th { position: sticky; top: 0; padding: 12px 14px; text-align: left; white-space: nowrap; background: var(--surface-2); border-bottom: 1px solid var(--border); font-size: 14px; font-weight: 700; letter-spacing: 0.01em; color: var(--text); }
 .fm-table td { padding: 11px 14px; max-width: 300px; border-bottom: 1px solid var(--border); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .fm-table tbody tr:last-child td { border-bottom: 0; }
 .fm-table tbody tr:hover td { background: var(--surface-2); }
@@ -318,3 +319,17 @@ td.fm-actions > * + * { margin-left: 6px; }
 .fm-form.fm-form--stack { grid-template-columns: minmax(0, 1fr); padding: 0; overflow: visible; margin-top: 12px; }
 .fm-card.fm-form.fm-form--stack { padding: 20px; margin-top: 0; }
 .fm-grid > * { min-width: 0; }
+
+/* Ma trận quyền: hàng chọn nhanh, hàng nhóm, khoảng cách tới nút Lưu/Hoàn tác */
+.fm-matrix th:not(:first-child), .fm-matrix td:not(:first-child) { text-align: center; }
+
+.fm-matrix .fm-group-row td { padding: 10px 14px; background: var(--surface-2); font-size: 13.5px; font-weight: 700; color: var(--text); border-top: 1px solid var(--border); }
+.fm-matrix .fm-group-row td:first-child { text-align: left; }
+.fm-matrix .fm-group-count { font-weight: 500; color: var(--muted); }
+.fm-matrix .fm-matrix-name { padding-left: 28px; text-align: left; }
+.fm-matrix input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary, #4f8cff); }
+.fm-matrix-actions { margin-top: 24px; display: flex; gap: 12px; }
+
+.fm-matrix .fm-group-toggle { display: inline-flex; align-items: center; gap: 8px; padding: 0; border: 0; background: none; color: inherit; font: inherit; font-weight: 700; cursor: pointer; text-align: left; }
+.fm-matrix .fm-group-chevron { display: inline-block; width: 14px; font-size: 18px; line-height: 1; transition: transform var(--ease); }
+.fm-matrix .fm-group-toggle[aria-expanded="true"] .fm-group-chevron { transform: rotate(90deg); }

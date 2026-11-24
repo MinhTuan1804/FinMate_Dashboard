@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { api, errorText, getData } from '../shared/api';
-import { AssumptionsPanel } from './AssumptionsPanel';
+import { NavLink } from 'react-router-dom';
 import { ConfirmReasonDialog, LoadingRows, PageError, PageHeader, SuccessNotice } from './Shared';
 
 type Feeds = { enabled: boolean; scheduleDayOfMonth: number; scheduleHour: number; cpiIndexUrl: string; autoApproveMaxDeltaBps: number; minRateBps: number; maxRateBps: number };
@@ -29,7 +29,6 @@ function PercentField({ label, bps, onChange }: { label: string; bps: number; on
 
 export function EconomicFeedsPage() {
   const [view, setView] = useState<ConfigView | null>(null), [draft, setDraft] = useState<Feeds>(DEFAULT_FEEDS);
-  const [reloadKey, setReloadKey] = useState(0);
   const [error, setError] = useState(''), [notice, setNotice] = useState(''), [outcome, setOutcome] = useState('');
   const [saving, setSaving] = useState(false), [busy, setBusy] = useState(false), [running, setRunning] = useState(false);
 
@@ -61,7 +60,7 @@ export function EconomicFeedsPage() {
     setRunning(true); setOutcome(''); setError('');
     try {
       const res = await api.post<{ data: { outcome: string } }>('/admin/economic-feeds/refresh');
-      setOutcome(res.data.data.outcome); setReloadKey(k => k + 1);
+      setOutcome(res.data.data.outcome);
     } catch (e) { setError(errorText(e)); } finally { setRunning(false); }
   }
 
@@ -95,7 +94,7 @@ export function EconomicFeedsPage() {
       {outcome && <p className="fm-hint" role="status"><span className={`fm-badge ${outcome === 'AutoApproved' || outcome === 'AlreadyCurrent' ? 'good' : ''}`}>{outcome}</span> {OUTCOME_TEXT[outcome] ?? ''}</p>}
     </div>
 
-    <AssumptionsPanel reloadKey={reloadKey} />
+    <p className="fm-hint">Số liệu lấy về thành giả định kinh tế chờ duyệt. Xem và duyệt ở <NavLink to="/ops/assumptions">Giả định kinh tế</NavLink>.</p>
 
     {saving && <ConfirmReasonDialog error={error} title="Lưu cấu hình số liệu kinh tế" description="Lịch chạy và địa chỉ nguồn mới có hiệu lực ngay. Ghi lý do để lưu vào lịch sử cấu hình." onCancel={() => setSaving(false)} onConfirm={save} busy={busy} />}
   </>;

@@ -4,11 +4,16 @@ export const CAPABILITY_LABEL: Record<string, string> = {
   ViewDashboard:'Xem tổng quan vận hành', ManageCannedReplies:'Quản lý câu trả lời mẫu', ViewOpsAudit:'Xem nhật ký vận hành', ViewAiStats:'Xem thống kê AI',
   ManageSystem:'Quản trị hệ thống và xuất bản pháp lý (Quản trị viên)', ViewMonitoring:'Xem giám sát và độ chính xác dự báo', ManageIncidents:'Xử lý sự cố',
   ModerateCommunity:'Kiểm duyệt ảnh, báo cáo và nội dung cộng đồng', MuteCommunityAuthors:'Tạm cấm tác giả theo nội dung',
-  ManageSubscriptionPlans:'Quản lý gói và xem đơn đăng ký (Quản lý vận hành trở lên)', ManageLegalDocuments:'Soạn nháp và xem lịch sử pháp lý',
+  ManageSubscriptionPlans:'Quản lý gói và xem đơn đăng ký', ManageLegalDocuments:'Soạn nháp và xem lịch sử pháp lý',
+  ManageAgentContent:'Xem và soạn nháp kho tri thức, giả định kinh tế', ApproveAgentContent:'Duyệt và gỡ kho tri thức, giả định kinh tế',
 };
+/** Khớp policy AdminOnly của backend (mọi endpoint /admin/* trừ nội dung agent). */
+export const isAdminRole = (role: string) => role === 'Admin';
+/** Khớp policy ManagerOrAbove của backend: duyệt tri thức, giả định, quản lý gói đăng ký. */
+export const isManagerOrAbove = (role: string) => role === 'Admin' || role === 'OpsManager';
 export function hasAny(caps: string[], required: string | string[]): boolean { return (Array.isArray(required) ? required : [required]).some(c => caps.includes(c)); }
 export function homeFor(role: string, caps: string[]): string {
   if (role === 'Admin') return '/';
-  const pages = [['ViewDashboard','/ops/dashboard'],['HandleTickets','/ops/tickets'],['ModerateCommunity','/ops/community'],['ManageLegalDocuments','/ops/legal']];
+  const pages = [['ViewDashboard','/ops/dashboard'],['HandleTickets','/ops/tickets'],['ModerateCommunity','/ops/community'],['ManageLegalDocuments','/ops/legal'],['ManageAgentContent','/ops/knowledge'],['ManageSubscriptionPlans','/ops/subscriptions'],['ViewMonitoring','/ops/monitoring']];
   return pages.find(([cap]) => caps.includes(cap))?.[1] || '/profile';
 }

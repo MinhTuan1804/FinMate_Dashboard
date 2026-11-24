@@ -11,7 +11,7 @@ const required = [
   ['get','/api/v1/admin/categories'],['post','/api/v1/admin/categories'],['patch','/api/v1/admin/categories/{id}/activation'],
   ['get','/api/v1/admin/provider-configs'],['get','/api/v1/admin/finance-methods'],['put','/api/v1/admin/finance-methods/{id}/goal-templates'],
   ['get','/api/v1/admin/goal-templates'],['get','/api/v1/admin/survey-questions'],['post','/api/v1/admin/survey-questions/{id}/options'],
-  ['get','/api/v1/admin/ai-stats'],['get','/api/v1/admin/ai-config/documents'],['post','/api/v1/admin/ai-config/documents/{name}/drafts'],
+  ['get','/api/v1/ops/ai-stats'],['get','/api/v1/admin/ai-config/documents'],['post','/api/v1/admin/ai-config/documents/{name}/drafts'],
   ['get','/api/v1/admin/ai-learning/feedback'],['get','/api/v1/ops/monitoring/status'],
   ['post','/api/v1/admin/ai-config/documents/{name}/versions/{version}/preview'],['post','/api/v1/admin/ai-config/documents/{name}/versions/{version}/activate'],
   ['get','/api/v1/admin/system-config'],['put','/api/v1/admin/system-config'],['get','/api/v1/admin/assumptions'],['post','/api/v1/admin/assumptions'],['post','/api/v1/admin/assumptions/{id}/approve'],['post','/api/v1/admin/assumptions/{id}/retire'],['post','/api/v1/admin/economic-feeds/refresh'],

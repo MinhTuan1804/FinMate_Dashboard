@@ -199,6 +199,10 @@
       "default": 30,
       "min": 1.0,
       "max": 365.0
+    },
+    "errorHints": {
+      "type": "IReadOnlyList<ErrorHint>",
+      "default": []
     }
   },
   "MarketCostType": {
@@ -377,6 +381,17 @@
     },
     "fontFamily": {
       "type": "string?"
+    },
+    "availableFonts": {
+      "type": "IReadOnlyList<string>",
+      "default": [
+        "Inter",
+        "Roboto",
+        "Nunito",
+        "Open Sans",
+        "Lexend",
+        "Montserrat"
+      ]
     },
     "textScale": {
       "type": "double",
@@ -1131,6 +1146,24 @@
     },
     "areas": {
       "type": "IReadOnlyList<CommunityArea>"
+    }
+  },
+  "ErrorHint": {
+    "match": {
+      "type": "string",
+      "maxLength": 200
+    },
+    "title": {
+      "type": "string",
+      "maxLength": 100
+    },
+    "explanation": {
+      "type": "string",
+      "maxLength": 500
+    },
+    "action": {
+      "type": "string",
+      "maxLength": 500
     }
   }
 }

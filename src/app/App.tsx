@@ -10,7 +10,6 @@ import { OpsMonitoringPage } from './ops/OpsMonitoringPage';
 import { OpsCannedRepliesPage } from './ops/OpsCannedRepliesPage';
 import { OpsAuditPage } from './ops/OpsAuditPage';
 import { OpsAiStatsPage } from './ops/OpsAiStatsPage';
-import { OpsForecastAccuracyPage, OpsForecastFeedbackPage } from './ops/OpsForecastPages';
 import { AgentSandboxPage } from './AgentSandboxPage';
 import { EconomicFeedsPage } from './EconomicFeedsPage';
 import { CatalogPage, DashboardPage, LogsPage, UsersPage, DeletionsPage } from './CorePages';
@@ -21,7 +20,7 @@ import { FinanceMethodsPage } from './FinanceMethodsPage';
 import { AppShell } from './layout/AppShell';
 import axios from 'axios';
 import { useResource } from './ui/useResource';
-import { hasAny, homeFor } from '../shared/permissions';
+import { hasAny, homeFor, isAdminRole } from '../shared/permissions';
 import { PageHeader } from './Shared';
 
 
@@ -53,19 +52,19 @@ export function App() {
   if(checking)return <div className="fm-loading">Đang kiểm tra phiên đăng nhập...</div>;
   if(bootError)return <div className="login-screen"><div className="login-card"><h1>Chưa thể tải phiên</h1><p>Thử lại kết nối để tiếp tục làm việc.</p><div className="error-box" role="alert">{bootError}</div><button className="btn btn--primary" onClick={()=>{setBootError('');setChecking(true);setBootAttempt(value=>value+1)}}>Thử lại</button><button className="btn" onClick={()=>{setBootError('');void signOut()}}>Đăng xuất</button></div></div>;
   if(!profile)return <Routes><Route path="/login" element={<Login onLogin={setProfile} pending={awaitingOtp} onCancel={()=>setAwaitingOtp(null)}/>}/><Route path="*" element={<Navigate to="/login" state={{from:location.pathname+location.search}} replace/>}/></Routes>;
-  const isAdmin=profile.role==='Admin',caps=ops?.capabilities??[],home=homeFor(profile.role,caps);
+  const isAdmin=isAdminRole(profile.role),caps=ops?.capabilities??[],home=homeFor(profile.role,caps);
   // Keep the requested route while effective permissions are loading, including Admin.
   if(!ops)return <div className="login-screen"><div className="login-card"><h1>Đang tải quyền</h1>{opsError?<><p role="alert">{opsError}</p><button className="btn btn--primary" onClick={opsResource.reload}>Thử lại</button><button className="btn" onClick={()=>void signOut()}>Đăng xuất</button></>:<p>Đang kiểm tra quyền truy cập trang bạn yêu cầu…</p>}</div></div>;
   const requested=(location.state as {from?:string}|null)?.from;
   const loginDestination=requested?.startsWith('/')&&!requested.startsWith('//')&&!requested.startsWith('/login')?requested:home;
   const need=(cap:string|string[],page:ReactElement)=><Require caps={caps} need={cap}>{page}</Require>;
   return <Routes><Route path="/login" element={<Navigate to={loginDestination} replace/>}/><Route element={<AppShell profile={profile} caps={caps} onLogout={signOut}/>}>
-    {ops&&<><Route path="/ops/dashboard" element={need('ViewDashboard',<OpsDashboardPage/>)}/><Route path="/ops/tickets" element={need('HandleTickets',<OpsTicketsPage/>)}/><Route path="/ops/tickets/:id" element={need('HandleTickets',<OpsTicketDetailPage me={ops}/>)}/><Route path="/ops/approvals" element={need(['ProposeApprovals','DecideApprovals'],<OpsApprovalsPage me={ops}/>)}/><Route path="/ops/forecast-feedback" element={need('HandleTickets',<OpsForecastFeedbackPage/>)}/><Route path="/ops/forecast-accuracy" element={need('ViewMonitoring',<OpsForecastAccuracyPage/>)}/><Route path="/ops/canned-replies" element={need('ManageCannedReplies',<OpsCannedRepliesPage/>)}/><Route path="/ops/monitoring" element={need('ViewMonitoring',<OpsMonitoringPage me={ops}/>)}/><Route path="/ops/audit" element={need('ViewOpsAudit',<OpsAuditPage/>)}/><Route path="/ops/ai-stats" element={need('ViewAiStats',<OpsAiStatsPage/>)}/></>}
-    <Route path="/ops/knowledge" element={<KnowledgeLibraryPage me={ops}/>}/><Route path="/ops/assumptions" element={<AssumptionsPage me={ops}/>}/>
+    {ops&&<><Route path="/ops/dashboard" element={need('ViewDashboard',<OpsDashboardPage/>)}/><Route path="/ops/tickets" element={need('HandleTickets',<OpsTicketsPage/>)}/><Route path="/ops/tickets/:id" element={need('HandleTickets',<OpsTicketDetailPage me={ops}/>)}/><Route path="/ops/approvals" element={need(['ProposeApprovals','DecideApprovals'],<OpsApprovalsPage me={ops}/>)}/><Route path="/ops/forecast-feedback" element={<Navigate to="/ops/forecast" replace/>}/><Route path="/ops/forecast-accuracy" element={<Navigate to="/ops/forecast" replace/>}/><Route path="/ops/canned-replies" element={need('ManageCannedReplies',<OpsCannedRepliesPage/>)}/><Route path="/ops/monitoring" element={need('ViewMonitoring',<OpsMonitoringPage me={ops}/>)}/><Route path="/ops/audit" element={need('ViewOpsAudit',<OpsAuditPage/>)}/><Route path="/ops/ai-stats" element={need('ViewAiStats',<OpsAiStatsPage/>)}/></>}
+    <Route path="/ops/knowledge" element={need('ManageAgentContent',<KnowledgeLibraryPage me={ops}/>)}/><Route path="/ops/assumptions" element={need('ManageAgentContent',<AssumptionsPage me={ops}/>)}/>
     <Route path="/ops/forecast" element={need(['ViewMonitoring','HandleTickets'],<ForecastPage me={ops}/>)}/>
     <Route path="/ops/community" element={need('ModerateCommunity',<CommunityPage me={ops}/>)}/>
     <Route path="/ops/legal" element={need('ManageLegalDocuments',<LegalPage me={ops}/>)}/>
-    <Route path="/ops/subscriptions" element={['Admin','OpsManager'].includes(profile.role)?need('ManageSubscriptionPlans',<SubscriptionsPage/>):<PageHeader title="Bạn không có quyền mở trang này" description="Quản lý gói đăng ký cần vai trò Quản lý vận hành hoặc Quản trị viên và quyền quản lý gói."/>}/>
+    <Route path="/ops/subscriptions" element={need('ManageSubscriptionPlans',<SubscriptionsPage/>)}/>
     {!isAdmin&&<><Route path="/" element={<Navigate to={home} replace/>}/><Route path="/profile" element={<ProfilePage profile={profile} onLogout={signOut}/>}/></>}
     {isAdmin&&<><Route path="/overview" element={<KpiOverviewPage/>}/><Route path="/markets" element={<MarketPage/>}/><Route path="/" element={<DashboardPage/>}/><Route path="/users" element={<UsersPage currentUserId={profile?.id}/>}/><Route path="/roles" element={<RolesPage currentUserId={profile?.id}/>}/><Route path="/audit-logs" element={<LogsPage/>}/><Route path="/data-deletion" element={<DeletionsPage/>}/>
     <Route path="/categories" element={<CatalogPage kind="categories"/>}/><Route path="/providers" element={<ProvidersPage/>}/><Route path="/finance-methods" element={<FinanceMethodsPage/>}/><Route path="/goal-templates" element={<CatalogPage kind="goal-templates"/>}/><Route path="/survey" element={<SurveyPage/>}/>

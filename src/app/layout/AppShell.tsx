@@ -1,3 +1,4 @@
+import { isAdminRole } from '../../shared/permissions';
 import { queryClient } from '../../shared/queryClient';
 import { Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
@@ -5,7 +6,6 @@ import { Activity, ArrowRight, Bot, BrainCircuit, ChevronRight, ClipboardCheck, 
 import { ROLE_LABEL, type Profile } from '../../shared/api';
 import { LoadingRows } from '../Shared';
 import { DialogOverlay } from '../ui/DialogOverlay';
-import { FinMateMark } from '../ui/FinMateMark';
 
 type NavGroup={title:string;links:[string,string,LucideIcon][]};
 const adminGroups:NavGroup[]=[
@@ -14,8 +14,8 @@ const adminGroups:NavGroup[]=[
   {title:'Danh mục tài chính',links:[['/categories','Danh mục',Tags],['/providers','Ngân hàng & ví',Wallet],['/finance-methods','Phương pháp tài chính',Database],['/goal-templates','Mẫu mục tiêu',Target],['/survey','Khảo sát',ClipboardCheck],['/markets','Dữ liệu thị trường',Activity]]},
   {title:'Cấu hình',links:[['/settings/system','Hệ thống',Settings2],['/settings/ai','Trí tuệ nhân tạo',Bot],['/settings/economic','Số liệu kinh tế',Landmark],['/sync','Đồng bộ dữ liệu',Activity],['/ai-learning','Học AI',BrainCircuit],['/agent-sandbox','Thử AI Agent (tạm)',Bot]]},
 ];
-const opsLinks:[string,string,LucideIcon,string][]=[['/ops/dashboard','Tổng quan',LayoutDashboard,'ViewDashboard'],['/ops/tickets','Hàng đợi ca hỗ trợ',Inbox,'HandleTickets'],['/ops/approvals','Đề xuất & duyệt',ClipboardCheck,'ProposeApprovals'],['/ops/forecast-feedback','Phản hồi dự báo',MessageSquareText,'HandleTickets'],['/ops/forecast-accuracy','Độ chính xác dự báo',Target,'ViewMonitoring'],['/ops/monitoring','Giám sát hệ thống',HeartPulse,'ViewMonitoring'],['/ops/canned-replies','Câu trả lời mẫu',MessageSquareText,'ManageCannedReplies'],['/ops/audit','Nhật ký vận hành',Activity,'ViewOpsAudit'],['/ops/ai-stats','Thống kê AI',BrainCircuit,'ViewAiStats']];
-const contentLinks:[string,string,LucideIcon,string][]=[['/ops/knowledge','Kho tri thức',Database,''],['/ops/assumptions','Giả định kinh tế',Activity,''],['/ops/forecast','Chất lượng dự báo',BrainCircuit,'forecast'],['/ops/community','Kiểm duyệt cộng đồng',Users,'ModerateCommunity'],['/ops/legal','Điều khoản & quyền riêng tư',Shield,'ManageLegalDocuments'],['/ops/subscriptions','Gói & đơn đăng ký',Wallet,'ManageSubscriptionPlans']];
+const opsLinks:[string,string,LucideIcon,string][]=[['/ops/dashboard','Tổng quan',LayoutDashboard,'ViewDashboard'],['/ops/tickets','Hàng đợi ca hỗ trợ',Inbox,'HandleTickets'],['/ops/approvals','Đề xuất & duyệt',ClipboardCheck,'ProposeApprovals'],['/ops/monitoring','Giám sát hệ thống',HeartPulse,'ViewMonitoring'],['/ops/canned-replies','Câu trả lời mẫu',MessageSquareText,'ManageCannedReplies'],['/ops/audit','Nhật ký vận hành',Activity,'ViewOpsAudit'],['/ops/ai-stats','Thống kê AI',BrainCircuit,'ViewAiStats']];
+const contentLinks:[string,string,LucideIcon,string][]=[['/ops/knowledge','Kho tri thức',Database,'ManageAgentContent'],['/ops/assumptions','Giả định kinh tế',Activity,'ManageAgentContent'],['/ops/forecast','Chất lượng dự báo',BrainCircuit,'forecast'],['/ops/community','Kiểm duyệt cộng đồng',Users,'ModerateCommunity'],['/ops/legal','Điều khoản & quyền riêng tư',Shield,'ManageLegalDocuments'],['/ops/subscriptions','Gói & đơn đăng ký',Wallet,'ManageSubscriptionPlans']];
 const subLabels:Record<string,string>={system:'Hệ thống',ai:'Trí tuệ nhân tạo',dictionary:'Từ điển',rules:'Luật',knowledge:'Kiến thức'};
 
 export function AppShell({profile,caps,onLogout}:{profile:Profile;caps:string[];onLogout:()=>Promise<void>}){
@@ -28,10 +28,10 @@ export function AppShell({profile,caps,onLogout}:{profile:Profile;caps:string[];
   const contentRef=useRef<HTMLDivElement>(null);
   const [narrow,setNarrow]=useState(()=>window.matchMedia('(max-width:900px)').matches);
   const inOps=profile.role!=='Admin'||location.pathname.startsWith('/ops/');
-  const ops:NavGroup[]=[{title:'Vận hành khách hàng',links:opsLinks.filter(link=>caps.includes(link[3])).map(([to,label,icon])=>[to,label,icon])}];
-  const content:NavGroup={title:'Nội dung & dịch vụ',links:contentLinks.filter(([path,,,cap])=>cap===''||(cap==='forecast'?(caps.includes('ViewMonitoring')||caps.includes('HandleTickets')):caps.includes(cap))&&(path!=='/ops/subscriptions'||['Admin','OpsManager'].includes(profile.role))).map(([to,label,icon])=>[to,label,icon])};
+  const ops:NavGroup[]=[{title:'Vận hành khách hàng',links:opsLinks.filter(link=>caps.includes(link[3])&&!(isAdminRole(profile.role)&&link[0]==='/ops/ai-stats')).map(([to,label,icon])=>[to,label,icon])}];
+  const content:NavGroup={title:'Nội dung & dịch vụ',links:contentLinks.filter(([,,,cap])=>cap===''||(cap==='forecast'?(caps.includes('ViewMonitoring')||caps.includes('HandleTickets')):caps.includes(cap))).map(([to,label,icon])=>[to,label,icon])};
   const visibleOps=ops.filter(group=>group.links.length>0);
-  const menu=profile.role==='Admin'?[...adminGroups.slice(0,3),...visibleOps,content,...adminGroups.slice(3)]:[...visibleOps,content];
+  const menu=isAdminRole(profile.role)?[...adminGroups.slice(0,3),...visibleOps,content,...adminGroups.slice(3)]:[...visibleOps,content];
   const allLinks=menu.flatMap(group=>group.links);
   const current=allLinks.find(([to])=>to==='/'?location.pathname==='/':location.pathname===to||location.pathname.startsWith(`${to}/`));
   const sections=location.pathname.split('/').filter(Boolean);
@@ -51,7 +51,7 @@ export function AppShell({profile,caps,onLogout}:{profile:Profile;caps:string[];
     <a className="skip-link" href="#main-content">Đến nội dung chính</a>
     {mobile&&<button className="sidebar-backdrop" aria-label="Đóng điều hướng" onClick={()=>setMobile(false)}/>}
     <aside ref={sidebarRef} className="sidebar" aria-label="Điều hướng chính" aria-hidden={narrow&&!mobile} onKeyDown={event=>{if(!mobile||event.key!=='Tab')return;const items=Array.from(sidebarRef.current?.querySelectorAll<HTMLElement>('a[href],button:not(:disabled)')||[]).filter(item=>item.getClientRects().length);if(event.shiftKey&&document.activeElement===items[0]){event.preventDefault();items.at(-1)?.focus()}else if(!event.shiftKey&&document.activeElement===items.at(-1)){event.preventDefault();items[0]?.focus()}}}>
-      <div className="brand"><FinMateMark/><div className="brand__wordmark"><strong>FinMate</strong><small>Không gian quản trị</small></div><button className="topbar__icon-btn mobile-close" aria-label="Đóng menu" onClick={()=>setMobile(false)}><X size={18}/></button></div>
+      <div className="brand"><div className="brand__wordmark"><strong>FinMate</strong><small>Không gian quản trị</small></div><button className="topbar__icon-btn mobile-close" aria-label="Đóng menu" onClick={()=>setMobile(false)}><X size={18}/></button></div>
       <div className="sidebar__inner"><nav className="nav">{menu.map(group=><div className="nav__group" key={group.title}><div className="nav__group-title">{group.title}</div>{group.links.map(([to,label,Icon])=><NavLink end={to==='/'} key={to} to={to} title={label} onClick={()=>setMobile(false)} className={({isActive})=>`nav__item ${isActive?'nav__item--active':''}`}><Icon size={18} aria-hidden="true"/><span>{label}</span>{location.pathname===to&&<span className="nav__active-dot"/>}</NavLink>)}</div>)}</nav></div>
       <div className="sidebar__footer"><NavLink to="/profile" className="sidebar__user" onClick={()=>setMobile(false)}><div className="sidebar__avatar">{profile.displayName?.slice(0,2).toUpperCase()||'AD'}</div><div className="sidebar__user-info"><div className="sidebar__user-name">{profile.displayName}</div><div className="sidebar__user-role">{ROLE_LABEL[profile.role]||profile.role}</div></div></NavLink><button className="btn btn--ghost" title="Đăng xuất" onClick={()=>void onLogout()}><LogOut size={16}/><span>Đăng xuất</span></button></div>
     </aside>

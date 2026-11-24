@@ -2,6 +2,7 @@ import { useUrlState } from './ui/useUrlState';
 import { useState } from 'react';
 import { CatalogPage } from './CorePages';
 import { HomeLayoutEditor } from './HomeLayoutEditor';
+import { AllocationEditor } from './AllocationEditor';
 import { PromptsPanel } from './PromptsPanel';
 import { PageHeader } from './Shared';
 
@@ -9,6 +10,7 @@ import { PageHeader } from './Shared';
 export function FinanceMethodsPage() {
   const [tab, setTab] = useUrlState('tab','methods');
   const [editing, setEditing] = useState<Record<string, unknown> | null>(null);
+  const [allocating, setAllocating] = useState<Record<string, unknown> | null>(null);
   const [reload, setReload] = useState(0);
   const [notice, setNotice] = useState('');
 
@@ -25,9 +27,19 @@ export function FinanceMethodsPage() {
           key={reload}
           kind="finance-methods"
           embedded
-          rowActions={row => <button className="btn btn--small" onClick={() => { setNotice(''); setEditing(row); }}>Trang chủ</button>}
+          rowActions={row => <>
+            <button className="btn btn--small" onClick={() => { setNotice(''); setEditing(row); }}>Trang chủ</button>
+            <button className="btn btn--small" onClick={() => { setNotice(''); setAllocating(row); }}>Phân bổ</button>
+          </>}
         />
       ) : <PromptsPanel />}
+      {allocating && (
+        <AllocationEditor
+          method={allocating}
+          onClose={() => setAllocating(null)}
+          onSaved={() => { setAllocating(null); setReload(n => n + 1); setNotice(`Đã lưu bảng phân bổ của "${String(allocating.name)}". Kế hoạch tháng mới tính theo bảng này.`); }}
+        />
+      )}
       {editing && (
         <HomeLayoutEditor
           method={editing}

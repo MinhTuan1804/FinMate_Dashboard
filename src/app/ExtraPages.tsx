@@ -1,3 +1,4 @@
+import { LearningSummary, SuggestionsPanel } from './LearningSuggestions';
 import { displayValue } from '../shared/labels';
 import { lazy, useState, type FormEvent } from 'react';
 import { api, errorText, type Profile } from '../shared/api';
@@ -30,10 +31,11 @@ export function RolesPage({currentUserId}:{currentUserId?:string}) {
 export function ProvidersPage(){const [requested,setTab]=useUrlState('tab','providers');const tab=requested==='formats'?'formats':'providers';return <><PageHeader title="Ngân hàng & Ví" description="Quản lý nhà cung cấp và định dạng thông báo."/><div className="fm-tabs"><button className={tab==='providers'?'active':''} onClick={()=>setTab('providers')}>Nhà cung cấp</button><button className={tab==='formats'?'active':''} onClick={()=>setTab('formats')}>Định dạng thông báo</button></div>{tab==='providers'?<CatalogPage kind="provider-configs" embedded/>:<FormatsPanel/>}</>}
 
 export function AiLearningPage(){
-  const [tab,setTab]=useUrlState('tab','feedback');
-  return <><PageHeader title="Học AI" description="Phản hồi dùng để cải thiện kết quả phân loại của AI."/>
-    <div className="fm-tabs">{[['feedback','Phản hồi người dùng'],['bills','Mẫu hóa đơn']].map(([key,label])=><button key={key} aria-pressed={tab===key} className={tab===key?'active':''} onClick={()=>setTab(key)}>{label}</button>)}</div>
-    {tab==='feedback'?<FeedbackPanel/>:<PendingDataPage kind="bills" embedded/>}
+  const [tab,setTab]=useUrlState('tab','suggestions');
+  return <><PageHeader title="Học AI" description="Người dùng sửa kết quả AI ở đâu, và biến các lần sửa đó thành luật để AI tự xếp đúng lần sau."/>
+    <LearningSummary/>
+    <div className="fm-tabs">{[['suggestions','Gợi ý thêm vào từ điển'],['feedback','Phản hồi người dùng'],['bills','Mẫu hóa đơn']].map(([key,label])=><button key={key} aria-pressed={tab===key} className={tab===key?'active':''} onClick={()=>setTab(key)}>{label}</button>)}</div>
+    {tab==='suggestions'?<SuggestionsPanel/>:tab==='feedback'?<FeedbackPanel/>:<PendingDataPage kind="bills" embedded/>}
   </>;
 }
 
