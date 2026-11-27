@@ -754,6 +754,12 @@
   "AgentSettings": {
     "budgetTemplate": {
       "type": "string"
+    },
+    "llmInputUsdPerMillion": {
+      "type": "IReadOnlyDictionary<string, double>"
+    },
+    "llmOutputUsdPerMillion": {
+      "type": "IReadOnlyDictionary<string, double>"
     }
   },
   "CategorySettings": {
